@@ -9,29 +9,26 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (k msgServer) CreateTwin(goCtx context.Context, msg *types.MsgCreateTwin) (*types.MsgCreateTwinResponse, error) {
+func (ms msgServer) CreateTwin(goCtx context.Context, msg *types.MsgCreateTwin) (*types.MsgCreateTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check if the value already exists
-	_, found := k.GetTwin(
-		ctx,
-		msg.Name,
-	)
+	_, found := ms.Keeper.GetTwin(ctx, msg.Name)
 	if found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
 	}
 
 	twin := types.NewTwin(msg.Name, msg.Hash, msg.Creator)
 
-	k.SetTwin(ctx, twin)
+	ms.Keeper.SetTwin(ctx, twin)
 	return &types.MsgCreateTwinResponse{}, nil
 }
 
-func (k msgServer) UpdateTwin(goCtx context.Context, msg *types.MsgUpdateTwin) (*types.MsgUpdateTwinResponse, error) {
+func (ms msgServer) UpdateTwin(goCtx context.Context, msg *types.MsgUpdateTwin) (*types.MsgUpdateTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check if the value exists
-	twin, found := k.GetTwin(ctx, msg.Name)
+	twin, found := ms.Keeper.GetTwin(ctx, msg.Name)
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
@@ -43,19 +40,16 @@ func (k msgServer) UpdateTwin(goCtx context.Context, msg *types.MsgUpdateTwin) (
 
 	twin = types.NewTwin(msg.Name, msg.Hash, msg.Creator)
 
-	k.SetTwin(ctx, twin)
+	ms.Keeper.SetTwin(ctx, twin)
 
 	return &types.MsgUpdateTwinResponse{}, nil
 }
 
-func (k msgServer) DeleteTwin(goCtx context.Context, msg *types.MsgDeleteTwin) (*types.MsgDeleteTwinResponse, error) {
+func (ms msgServer) DeleteTwin(goCtx context.Context, msg *types.MsgDeleteTwin) (*types.MsgDeleteTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Check if the value exists
-	twin, found := k.GetTwin(
-		ctx,
-		msg.Name,
-	)
+	twin, found := ms.Keeper.GetTwin(ctx, msg.Name)
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
 	}
@@ -65,7 +59,7 @@ func (k msgServer) DeleteTwin(goCtx context.Context, msg *types.MsgDeleteTwin) (
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	k.RemoveTwin(ctx, msg.Name)
+	ms.Keeper.RemoveTwin(ctx, msg.Name)
 
 	return &types.MsgDeleteTwinResponse{}, nil
 }
