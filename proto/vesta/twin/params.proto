@@ -1,0 +1,12 @@
+syntax = "proto3";
+package vesta.twin;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "vesta/x/twin/types";
+
+// Params defines the parameters for the module.
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  
+}
