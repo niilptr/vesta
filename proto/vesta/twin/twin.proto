@@ -1,11 +1,14 @@
 syntax = "proto3";
 package vesta.twin;
 
+import "cosmos_proto/cosmos.proto";
+
 option go_package = "vesta/x/twin/types";
 
 message Twin {
+  
   string name = 1; 
   string hash = 2; 
-  string creator = 3;
+  string creator = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"]; 
 }
 
