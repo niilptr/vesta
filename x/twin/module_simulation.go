@@ -36,6 +36,10 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgDeleteTwin int = 100
 
+	opWeightMsgTrain = "op_weight_msg_train"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgTrain int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -111,6 +115,17 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgDeleteTwin,
 		twinsimulation.SimulateMsgDeleteTwin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgTrain int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgTrain, &weightMsgTrain, nil,
+		func(_ *rand.Rand) {
+			weightMsgTrain = defaultWeightMsgTrain
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgTrain,
+		twinsimulation.SimulateMsgTrain(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

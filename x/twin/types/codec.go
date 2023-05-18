@@ -11,6 +11,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateTwin{}, "twin/CreateTwin", nil)
 	cdc.RegisterConcrete(&MsgUpdateTwin{}, "twin/UpdateTwin", nil)
 	cdc.RegisterConcrete(&MsgDeleteTwin{}, "twin/DeleteTwin", nil)
+	cdc.RegisterConcrete(&MsgTrain{}, "twin/Train", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -19,6 +20,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgCreateTwin{},
 		&MsgUpdateTwin{},
 		&MsgDeleteTwin{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgTrain{},
 	)
 	// this line is used by starport scaffolding # 3
 
