@@ -24,7 +24,19 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgCreateTwin = "op_weight_msg_twin"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgCreateTwin int = 100
+
+	opWeightMsgUpdateTwin = "op_weight_msg_twin"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgUpdateTwin int = 100
+
+	opWeightMsgDeleteTwin = "op_weight_msg_twin"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgDeleteTwin int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -35,6 +47,16 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	}
 	twinGenesis := types.GenesisState{
 		Params: types.DefaultParams(),
+		TwinList: []types.Twin{
+			{
+				Creator: sample.AccAddress(),
+				Name:    "0",
+			},
+			{
+				Creator: sample.AccAddress(),
+				Name:    "1",
+			},
+		},
 		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&twinGenesis)
@@ -57,6 +79,39 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgCreateTwin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgCreateTwin, &weightMsgCreateTwin, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateTwin = defaultWeightMsgCreateTwin
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgCreateTwin,
+		twinsimulation.SimulateMsgCreateTwin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgUpdateTwin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgUpdateTwin, &weightMsgUpdateTwin, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateTwin = defaultWeightMsgUpdateTwin
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgUpdateTwin,
+		twinsimulation.SimulateMsgUpdateTwin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgDeleteTwin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgDeleteTwin, &weightMsgDeleteTwin, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteTwin = defaultWeightMsgDeleteTwin
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgDeleteTwin,
+		twinsimulation.SimulateMsgDeleteTwin(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

@@ -6,7 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-sdk/types/query"
+	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -113,33 +113,232 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+type QueryGetTwinRequest struct {
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (m *QueryGetTwinRequest) Reset()         { *m = QueryGetTwinRequest{} }
+func (m *QueryGetTwinRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetTwinRequest) ProtoMessage()    {}
+func (*QueryGetTwinRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_909e33f720255f3e, []int{2}
+}
+func (m *QueryGetTwinRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetTwinRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetTwinRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetTwinRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetTwinRequest.Merge(m, src)
+}
+func (m *QueryGetTwinRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetTwinRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetTwinRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetTwinRequest proto.InternalMessageInfo
+
+func (m *QueryGetTwinRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type QueryGetTwinResponse struct {
+	Twin Twin `protobuf:"bytes,1,opt,name=twin,proto3" json:"twin"`
+}
+
+func (m *QueryGetTwinResponse) Reset()         { *m = QueryGetTwinResponse{} }
+func (m *QueryGetTwinResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetTwinResponse) ProtoMessage()    {}
+func (*QueryGetTwinResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_909e33f720255f3e, []int{3}
+}
+func (m *QueryGetTwinResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetTwinResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetTwinResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetTwinResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetTwinResponse.Merge(m, src)
+}
+func (m *QueryGetTwinResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetTwinResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetTwinResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetTwinResponse proto.InternalMessageInfo
+
+func (m *QueryGetTwinResponse) GetTwin() Twin {
+	if m != nil {
+		return m.Twin
+	}
+	return Twin{}
+}
+
+type QueryAllTwinRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllTwinRequest) Reset()         { *m = QueryAllTwinRequest{} }
+func (m *QueryAllTwinRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTwinRequest) ProtoMessage()    {}
+func (*QueryAllTwinRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_909e33f720255f3e, []int{4}
+}
+func (m *QueryAllTwinRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllTwinRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllTwinRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllTwinRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTwinRequest.Merge(m, src)
+}
+func (m *QueryAllTwinRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllTwinRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTwinRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllTwinRequest proto.InternalMessageInfo
+
+func (m *QueryAllTwinRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryAllTwinResponse struct {
+	Twin       []Twin              `protobuf:"bytes,1,rep,name=twin,proto3" json:"twin"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllTwinResponse) Reset()         { *m = QueryAllTwinResponse{} }
+func (m *QueryAllTwinResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllTwinResponse) ProtoMessage()    {}
+func (*QueryAllTwinResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_909e33f720255f3e, []int{5}
+}
+func (m *QueryAllTwinResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllTwinResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllTwinResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllTwinResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllTwinResponse.Merge(m, src)
+}
+func (m *QueryAllTwinResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllTwinResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllTwinResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllTwinResponse proto.InternalMessageInfo
+
+func (m *QueryAllTwinResponse) GetTwin() []Twin {
+	if m != nil {
+		return m.Twin
+	}
+	return nil
+}
+
+func (m *QueryAllTwinResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "vesta.twin.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "vesta.twin.QueryParamsResponse")
+	proto.RegisterType((*QueryGetTwinRequest)(nil), "vesta.twin.QueryGetTwinRequest")
+	proto.RegisterType((*QueryGetTwinResponse)(nil), "vesta.twin.QueryGetTwinResponse")
+	proto.RegisterType((*QueryAllTwinRequest)(nil), "vesta.twin.QueryAllTwinRequest")
+	proto.RegisterType((*QueryAllTwinResponse)(nil), "vesta.twin.QueryAllTwinResponse")
 }
 
 func init() { proto.RegisterFile("vesta/twin/query.proto", fileDescriptor_909e33f720255f3e) }
 
 var fileDescriptor_909e33f720255f3e = []byte{
-	// 274 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x90, 0xc1, 0x4a, 0xc3, 0x40,
-	0x10, 0x86, 0x13, 0xd1, 0x1c, 0xd6, 0xdb, 0x1a, 0x54, 0x82, 0x6c, 0x25, 0x27, 0x11, 0xc9, 0xda,
-	0xfa, 0x06, 0xbd, 0x78, 0xd5, 0x1e, 0xbd, 0x6d, 0x64, 0x58, 0x02, 0x76, 0x67, 0x9b, 0xd9, 0x56,
-	0x7b, 0xf5, 0x09, 0x04, 0x5f, 0xaa, 0xc7, 0x82, 0x17, 0x4f, 0x22, 0x89, 0x0f, 0x22, 0xd9, 0x0d,
-	0x58, 0x29, 0xbd, 0x85, 0x6f, 0xbe, 0xff, 0xcf, 0xcc, 0xb2, 0xe3, 0x05, 0x90, 0x53, 0xd2, 0x3d,
-	0x57, 0x46, 0xce, 0xe6, 0x50, 0x2f, 0x0b, 0x5b, 0xa3, 0x43, 0xce, 0x3c, 0x2f, 0x3a, 0x9e, 0xa5,
-	0x1a, 0x35, 0x7a, 0x2c, 0xbb, 0xaf, 0x60, 0x64, 0x67, 0x1a, 0x51, 0x3f, 0x81, 0x54, 0xb6, 0x92,
-	0xca, 0x18, 0x74, 0xca, 0x55, 0x68, 0xa8, 0x9f, 0x5e, 0x3e, 0x22, 0x4d, 0x91, 0x64, 0xa9, 0x08,
-	0x42, 0xb1, 0x5c, 0x0c, 0x4b, 0x70, 0x6a, 0x28, 0xad, 0xd2, 0x95, 0xf1, 0x72, 0xef, 0x9e, 0x6c,
-	0xec, 0x60, 0x55, 0xad, 0xa6, 0x7d, 0x49, 0x9e, 0x32, 0x7e, 0xdf, 0x45, 0xef, 0x3c, 0x9c, 0xc0,
-	0x6c, 0x0e, 0xe4, 0xf2, 0x5b, 0x76, 0xf4, 0x8f, 0x92, 0x45, 0x43, 0xc0, 0xaf, 0x59, 0x12, 0xc2,
-	0xa7, 0xf1, 0x79, 0x7c, 0x71, 0x38, 0xe2, 0xc5, 0xdf, 0x09, 0x45, 0x70, 0xc7, 0xfb, 0xab, 0xaf,
-	0x41, 0x34, 0xe9, 0xbd, 0x91, 0x61, 0x07, 0xbe, 0x88, 0x03, 0x4b, 0x82, 0xc0, 0xc5, 0x66, 0x68,
-	0xfb, 0xdf, 0xd9, 0x60, 0xe7, 0x3c, 0x6c, 0x91, 0x67, 0xaf, 0x1f, 0x3f, 0xef, 0x7b, 0x29, 0xe7,
-	0x72, 0xeb, 0xa8, 0xf1, 0xd5, 0xaa, 0x11, 0xf1, 0xba, 0x11, 0xf1, 0x77, 0x23, 0xe2, 0xb7, 0x56,
-	0x44, 0xeb, 0x56, 0x44, 0x9f, 0xad, 0x88, 0x1e, 0x78, 0x90, 0x5f, 0x82, 0xee, 0x96, 0x16, 0xa8,
-	0x4c, 0xfc, 0x1b, 0xdc, 0xfc, 0x06, 0x00, 0x00, 0xff, 0xff, 0x5e, 0x25, 0xc1, 0x37, 0xa2, 0x01,
-	0x00, 0x00,
+	// 453 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x93, 0x3f, 0x8f, 0xd3, 0x30,
+	0x18, 0xc6, 0x93, 0x12, 0x8a, 0x30, 0xcb, 0xe9, 0x25, 0x70, 0x47, 0x84, 0xd2, 0x93, 0x07, 0xfe,
+	0x9c, 0x90, 0xcd, 0x1d, 0x9f, 0xe0, 0x3a, 0xd0, 0xf5, 0x88, 0x98, 0x90, 0x18, 0x5c, 0x64, 0xa2,
+	0xa0, 0xd4, 0xce, 0xd5, 0xbe, 0x96, 0x0a, 0xb1, 0xb0, 0xb2, 0x20, 0xf1, 0x8d, 0x98, 0x3a, 0x56,
+	0x62, 0x61, 0x42, 0xa8, 0xe5, 0x83, 0x20, 0xff, 0xe1, 0x9a, 0x34, 0xad, 0xba, 0x44, 0xd6, 0xeb,
+	0xc7, 0xcf, 0xef, 0xf1, 0xfb, 0x3a, 0xe8, 0xfe, 0x84, 0x2b, 0xcd, 0xa8, 0x9e, 0x16, 0x82, 0x5e,
+	0x5e, 0xf1, 0xf1, 0x8c, 0x54, 0x63, 0xa9, 0x25, 0x20, 0x5b, 0x27, 0xa6, 0x9e, 0xc4, 0xb9, 0xcc,
+	0xa5, 0x2d, 0x53, 0xb3, 0x72, 0x8a, 0xe4, 0x61, 0x2e, 0x65, 0x5e, 0x72, 0xca, 0xaa, 0x82, 0x32,
+	0x21, 0xa4, 0x66, 0xba, 0x90, 0x42, 0xf9, 0xdd, 0x93, 0x77, 0x52, 0x8d, 0xa4, 0xa2, 0x43, 0xa6,
+	0xb8, 0x33, 0xa6, 0x93, 0xd3, 0x21, 0xd7, 0xec, 0x94, 0x56, 0x2c, 0x2f, 0x84, 0x15, 0x7b, 0xed,
+	0x61, 0x2d, 0x43, 0xc5, 0xc6, 0x6c, 0xf4, 0xdf, 0xe4, 0x5e, 0x6d, 0xc3, 0x7c, 0x5c, 0x19, 0xc7,
+	0x08, 0x5e, 0x19, 0xc7, 0x0b, 0xab, 0xcd, 0xf8, 0xe5, 0x15, 0x57, 0x1a, 0x0f, 0xd0, 0xdd, 0x46,
+	0x55, 0x55, 0x52, 0x28, 0x0e, 0xcf, 0x51, 0xd7, 0x79, 0x1e, 0x85, 0xc7, 0xe1, 0x93, 0x3b, 0x67,
+	0x40, 0xd6, 0x37, 0x23, 0x4e, 0xdb, 0x8f, 0xe6, 0xbf, 0x7b, 0x41, 0xe6, 0x75, 0xf8, 0xa9, 0x37,
+	0x1a, 0x70, 0xfd, 0x7a, 0x5a, 0x08, 0xef, 0x0f, 0x80, 0x22, 0xc1, 0x46, 0xdc, 0xda, 0xdc, 0xce,
+	0xec, 0x1a, 0xf7, 0x51, 0xdc, 0x94, 0x7a, 0xe8, 0x09, 0x8a, 0x8c, 0xbf, 0x47, 0x1e, 0xd4, 0x91,
+	0x46, 0xe7, 0x81, 0x56, 0x83, 0xdf, 0x7a, 0xdc, 0x79, 0x59, 0xd6, 0x71, 0x2f, 0x11, 0x5a, 0x37,
+	0xca, 0x1b, 0x3d, 0x22, 0xae, 0xab, 0xc4, 0x74, 0x95, 0xb8, 0x71, 0xf9, 0xae, 0x92, 0x0b, 0x96,
+	0x73, 0x7f, 0x36, 0xab, 0x9d, 0xc4, 0x5f, 0x43, 0x9f, 0xf1, 0xda, 0xbf, 0x95, 0xf1, 0xc6, 0xbe,
+	0x8c, 0x30, 0x68, 0x84, 0xe9, 0xd8, 0x30, 0x8f, 0xf7, 0x86, 0x71, 0xa0, 0x7a, 0x9a, 0xb3, 0x1f,
+	0x1d, 0x74, 0xd3, 0xa6, 0x01, 0x8e, 0xba, 0xae, 0xfb, 0x90, 0xd6, 0xd1, 0xed, 0xc1, 0x26, 0xbd,
+	0x9d, 0xfb, 0x0e, 0x80, 0x93, 0x2f, 0x3f, 0xff, 0x7e, 0xef, 0xc4, 0x00, 0xb4, 0xf5, 0x90, 0xe0,
+	0x03, 0x8a, 0xcc, 0x6d, 0xa0, 0x6d, 0xd2, 0x1c, 0x6f, 0x72, 0xbc, 0x5b, 0xe0, 0x31, 0x3d, 0x8b,
+	0x79, 0x00, 0x87, 0x74, 0xe3, 0x59, 0xd2, 0x4f, 0xe6, 0x31, 0x7c, 0x86, 0xf7, 0xe8, 0x96, 0x39,
+	0x70, 0x5e, 0x96, 0x5b, 0x70, 0xcd, 0xf1, 0x6e, 0xc1, 0x6d, 0xcc, 0x07, 0x1f, 0x59, 0x1c, 0xc0,
+	0xc1, 0x26, 0xae, 0xff, 0x6c, 0xbe, 0x4c, 0xc3, 0xc5, 0x32, 0x0d, 0xff, 0x2c, 0xd3, 0xf0, 0xdb,
+	0x2a, 0x0d, 0x16, 0xab, 0x34, 0xf8, 0xb5, 0x4a, 0x83, 0x37, 0xe0, 0xa4, 0x1f, 0xbd, 0x78, 0x56,
+	0x71, 0x35, 0xec, 0xda, 0x9f, 0xe6, 0xc5, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x70, 0x65, 0x96,
+	0x86, 0xea, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -156,6 +355,9 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Queries a list of Twin items.
+	Twin(ctx context.Context, in *QueryGetTwinRequest, opts ...grpc.CallOption) (*QueryGetTwinResponse, error)
+	TwinAll(ctx context.Context, in *QueryAllTwinRequest, opts ...grpc.CallOption) (*QueryAllTwinResponse, error)
 }
 
 type queryClient struct {
@@ -175,10 +377,31 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) Twin(ctx context.Context, in *QueryGetTwinRequest, opts ...grpc.CallOption) (*QueryGetTwinResponse, error) {
+	out := new(QueryGetTwinResponse)
+	err := c.cc.Invoke(ctx, "/vesta.twin.Query/Twin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) TwinAll(ctx context.Context, in *QueryAllTwinRequest, opts ...grpc.CallOption) (*QueryAllTwinResponse, error) {
+	out := new(QueryAllTwinResponse)
+	err := c.cc.Invoke(ctx, "/vesta.twin.Query/TwinAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Queries a list of Twin items.
+	Twin(context.Context, *QueryGetTwinRequest) (*QueryGetTwinResponse, error)
+	TwinAll(context.Context, *QueryAllTwinRequest) (*QueryAllTwinResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -187,6 +410,12 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) Twin(ctx context.Context, req *QueryGetTwinRequest) (*QueryGetTwinResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Twin not implemented")
+}
+func (*UnimplementedQueryServer) TwinAll(ctx context.Context, req *QueryAllTwinRequest) (*QueryAllTwinResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TwinAll not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -211,6 +440,42 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Twin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetTwinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Twin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/vesta.twin.Query/Twin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Twin(ctx, req.(*QueryGetTwinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_TwinAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllTwinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TwinAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/vesta.twin.Query/TwinAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TwinAll(ctx, req.(*QueryAllTwinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "vesta.twin.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -218,6 +483,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Twin",
+			Handler:    _Query_Twin_Handler,
+		},
+		{
+			MethodName: "TwinAll",
+			Handler:    _Query_TwinAll_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -280,6 +553,153 @@ func (m *QueryParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetTwinRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetTwinRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetTwinRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetTwinResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetTwinResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetTwinResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Twin.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllTwinRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllTwinRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllTwinRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllTwinResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllTwinResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllTwinResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Twin) > 0 {
+		for iNdEx := len(m.Twin) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Twin[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -308,6 +728,62 @@ func (m *QueryParamsResponse) Size() (n int) {
 	_ = l
 	l = m.Params.Size()
 	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryGetTwinRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetTwinResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Twin.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryAllTwinRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllTwinResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Twin) > 0 {
+		for _, e := range m.Twin {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	return n
 }
 
@@ -426,6 +902,377 @@ func (m *QueryParamsResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetTwinRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetTwinRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetTwinRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetTwinResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetTwinResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetTwinResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Twin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Twin.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllTwinRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllTwinRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllTwinRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllTwinResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllTwinResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllTwinResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Twin", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Twin = append(m.Twin, Twin{})
+			if err := m.Twin[len(m.Twin)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

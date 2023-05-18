@@ -1,0 +1,11 @@
+syntax = "proto3";
+package vesta.twin;
+
+option go_package = "vesta/x/twin/types";
+
+message Twin {
+  string name = 1; 
+  string hash = 2; 
+  string creator = 3;
+}
+

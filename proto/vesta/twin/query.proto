@@ -1,26 +1,58 @@
 syntax = "proto3";
+
 package vesta.twin;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "vesta/twin/params.proto";
+import "vesta/twin/twin.proto";
 
 option go_package = "vesta/x/twin/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  
   // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/vesta/twin/params";
+  
+  }
+  
+  // Queries a list of Twin items.
+  rpc Twin    (QueryGetTwinRequest) returns (QueryGetTwinResponse) {
+    option (google.api.http).get = "/vesta/twin/twin/{name}";
+  
+  }
+  rpc TwinAll (QueryAllTwinRequest) returns (QueryAllTwinResponse) {
+    option (google.api.http).get = "/vesta/twin/twin";
+  
   }
 }
-
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
+  
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
 }
+
+message QueryGetTwinRequest {
+  string name = 1;
+}
+
+message QueryGetTwinResponse {
+  Twin twin = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllTwinRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllTwinResponse {
+  repeated Twin                                   twin       = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+

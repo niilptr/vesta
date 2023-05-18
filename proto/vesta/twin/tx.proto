@@ -1,7 +1,37 @@
 syntax = "proto3";
+
 package vesta.twin;
+
+import "vesta/twin/twin.proto";
 
 option go_package = "vesta/x/twin/types";
 
 // Msg defines the Msg service.
-service Msg {}
+service Msg {
+  rpc CreateTwin (MsgCreateTwin) returns (MsgCreateTwinResponse);
+  rpc UpdateTwin (MsgUpdateTwin) returns (MsgUpdateTwinResponse);
+  rpc DeleteTwin (MsgDeleteTwin) returns (MsgDeleteTwinResponse);
+}
+message MsgCreateTwin {
+  string creator = 1;
+  string name    = 2;
+  string hash    = 3;
+}
+
+message MsgCreateTwinResponse {}
+
+message MsgUpdateTwin {
+  string creator = 1;
+  string name    = 2;
+  string hash    = 3;
+}
+
+message MsgUpdateTwinResponse {}
+
+message MsgDeleteTwin {
+  string creator = 1;
+  string name    = 2;
+}
+
+message MsgDeleteTwinResponse {}
+
