@@ -3,15 +3,18 @@ package keeper
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"vesta/x/twin/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k msgServer) Train(goCtx context.Context, msg *types.MsgTrain) (*types.MsgTrainResponse, error) {
+func (ms msgServer) Train(goCtx context.Context, msg *types.MsgTrain) (*types.MsgTrainResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	err := ms.Keeper.StartTraining(ctx, msg.Name, msg.Creator)
+	if err != nil {
+		return &types.MsgTrainResponse{}, err
+	}
 
 	return &types.MsgTrainResponse{}, nil
 }

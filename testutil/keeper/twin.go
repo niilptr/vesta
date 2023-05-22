@@ -1,7 +1,11 @@
 package keeper
 
 import (
+	"os"
 	"testing"
+
+	"vesta/x/twin/keeper"
+	"vesta/x/twin/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -13,8 +17,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
-	"vesta/x/twin/keeper"
-	"vesta/x/twin/types"
 )
 
 func TwinKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
@@ -36,11 +38,17 @@ func TwinKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 		memStoreKey,
 		"TwinParams",
 	)
+
+	userHome, err := os.UserHomeDir()
+	require.NoError(t, err)
+	nodeHome := userHome + "/test-vesta/"
+
 	k := keeper.NewKeeper(
 		cdc,
 		storeKey,
 		memStoreKey,
 		paramsSubspace,
+		nodeHome,
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, false, log.NewNopLogger())

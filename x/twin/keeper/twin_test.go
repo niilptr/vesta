@@ -4,16 +4,14 @@ import (
 	"strconv"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	keepertest "vesta/testutil/keeper"
 	"vesta/testutil/nullify"
 	"vesta/x/twin/keeper"
 	"vesta/x/twin/types"
-)
 
-// Prevent strconv unused error
-var _ = strconv.IntSize
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+)
 
 func createNTwin(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Twin {
 	items := make([]types.Twin, n)

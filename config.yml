@@ -19,3 +19,7 @@ faucet:
 validators:
 - name: alice
   bonded: 100000000stake
+  config:
+    consensus:
+      timeout_commit: 2s
+    log_level: error

@@ -106,6 +106,7 @@ import (
 	twinmodule "vesta/x/twin"
 	twinmodulekeeper "vesta/x/twin/keeper"
 	twinmoduletypes "vesta/x/twin/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 
 	appparams "vesta/app/params"
@@ -113,7 +114,7 @@ import (
 )
 
 const (
-	AccountAddressPrefix = "cosmos"
+	AccountAddressPrefix = "vesta"
 	Name                 = "vesta"
 )
 
@@ -500,6 +501,7 @@ func New(
 		keys[twinmoduletypes.StoreKey],
 		keys[twinmoduletypes.MemStoreKey],
 		app.GetSubspace(twinmoduletypes.ModuleName),
+		DefaultNodeHome,
 	)
 	twinModule := twinmodule.NewAppModule(appCodec, app.TwinKeeper, app.AccountKeeper, app.BankKeeper)
 
