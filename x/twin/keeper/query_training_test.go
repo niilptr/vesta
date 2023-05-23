@@ -16,7 +16,7 @@ import (
 func TestTrainingStateQuery(t *testing.T) {
 	keeper, ctx := keepertest.TwinKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	item := createTestTrainingState(keeper, ctx)
+	item := createTestTrainingState(keeper, ctx, true)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetTrainingStateRequest

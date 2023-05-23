@@ -4,5 +4,6 @@ package vesta.twin;
 option go_package = "vesta/x/twin/types";
 
 message TrainingState {
-  bool training_state = 1;
+  bool value = 1;
+  string name = 2;
 }

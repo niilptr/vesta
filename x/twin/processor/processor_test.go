@@ -3,7 +3,6 @@ package processor_test
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 	"vesta/x/twin/processor"
 	"vesta/x/twin/types"
@@ -19,10 +18,7 @@ func NewTestProcessor(t *testing.T) processor.Processor {
 
 	userHome, err := os.UserHomeDir()
 	require.NoError(t, err)
-	lastok := strings.Compare(userHome[len(userHome)-1:], "/")
-	if lastok != 0 {
-		userHome = userHome + "/"
-	}
+	userHome = processor.CheckPathFormat(userHome)
 	_, ctx := keepertest.TwinKeeper(t)
 	l := ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 
@@ -41,10 +37,11 @@ func TestGetAccessToken(t *testing.T) {
 func TestReadTrainConfiguration(t *testing.T) {
 
 	p := NewTestProcessor(t)
+	twinName := "eva00"
 
 	acctoken, err := p.GetAccessToken()
 	require.NoError(t, err)
-	content, err := p.ReadTrainConfiguration(acctoken)
+	content, err := p.ReadTrainConfiguration(acctoken, twinName)
 	require.NoError(t, err)
 	require.NotEmpty(t, content)
 }

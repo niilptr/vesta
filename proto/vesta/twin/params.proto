@@ -2,11 +2,12 @@ syntax = "proto3";
 package vesta.twin;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
 
 option go_package = "vesta/x/twin/types";
 
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  
+  google.protobuf.Duration max_waiting_training = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
 }

@@ -8,5 +8,7 @@ import (
 
 // x/twin module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
+
+	// Chain errors
+	ErrTrainingInProgress = sdkerrors.Register(ModuleName, 1101, "a training is in progress")
 )

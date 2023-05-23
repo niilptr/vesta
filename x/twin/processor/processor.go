@@ -22,7 +22,8 @@ type AccessToken struct {
 }
 
 type RemoteURLContent struct {
-	Url string
+	Remote string
+	File   string
 }
 
 type ValidatorMonikerContent struct {
@@ -43,12 +44,17 @@ type Processor struct {
 	Logger   log.Logger
 }
 
+func CheckPathFormat(path string) string {
+	lastok := strings.Compare(path[len(path)-1:], "/")
+	if lastok != 0 {
+		path = path + "/"
+	}
+	return path
+}
+
 func NewProcessor(nodeHome string, log log.Logger) Processor {
 
-	lastok := strings.Compare(nodeHome[len(nodeHome)-1:], "/")
-	if lastok != 0 {
-		nodeHome = nodeHome + "/"
-	}
+	nodeHome = CheckPathFormat(nodeHome)
 
 	p := Processor{
 		NodeHome: nodeHome,
@@ -57,7 +63,7 @@ func NewProcessor(nodeHome string, log log.Logger) Processor {
 	return p
 }
 
-func (p Processor) PrepareTraining(ctx sdk.Context) (ValidatorTrainData, error) {
+func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorTrainData, error) {
 
 	var vtd ValidatorTrainData
 
@@ -72,14 +78,13 @@ func (p Processor) PrepareTraining(ctx sdk.Context) (ValidatorTrainData, error) 
 		return vtd, err
 	}
 
-	c, err := p.ReadTrainConfiguration(acctoken)
+	c, err := p.ReadTrainConfiguration(acctoken, twinName)
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return vtd, err
 	}
 
 	var found bool
-
 	for _, t := range c.ValidatorsTrainData {
 		lr, err := t.Lr.Float64()
 		if err != nil {
@@ -95,6 +100,16 @@ func (p Processor) PrepareTraining(ctx sdk.Context) (ValidatorTrainData, error) 
 
 	if !found {
 		return vtd, fmt.Errorf("Train data not found")
+	}
+
+	bz, err := json.MarshalIndent(vtd, "", " ")
+	if err != nil {
+		return vtd, err
+	}
+	trainConfFile := p.NodeHome + "train_conf.json"
+	err = ioutil.WriteFile(trainConfFile, bz, 0644)
+	if err != nil {
+		return vtd, err
 	}
 
 	return vtd, nil
@@ -116,11 +131,11 @@ func (p Processor) StartTraining(ctx sdk.Context, lr float64) {
 	}
 }
 
-func (p Processor) ReadTrainConfiguration(accessToken string) (TrainDataContent, error) {
+func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (TrainDataContent, error) {
 
 	var r TrainDataContent
 
-	fileURL, err := p.GetRemoteURL()
+	fileURL, err := p.GetRemoteURL(twinName)
 	if err != nil {
 		return r, err
 	}
@@ -156,7 +171,7 @@ func (p Processor) ReadTrainConfiguration(accessToken string) (TrainDataContent,
 
 func (p Processor) GetAccessToken() (string, error) {
 
-	accessTokenFile := p.NodeHome + "accessToken.toml"
+	accessTokenFile := p.NodeHome + "access_token.toml"
 
 	bz, err := ioutil.ReadFile(accessTokenFile)
 	if err != nil {
@@ -172,7 +187,7 @@ func (p Processor) GetAccessToken() (string, error) {
 	return c.AccessToken.Value, nil
 }
 
-func (p Processor) GetRemoteURL() (string, error) {
+func (p Processor) GetRemoteURL(twinName string) (string, error) {
 
 	file := p.NodeHome + "remote.toml"
 
@@ -187,12 +202,18 @@ func (p Processor) GetRemoteURL() (string, error) {
 		return "", err
 	}
 
-	return c.Url, nil
+	if c.Remote == "" || c.File == "" {
+		return "", fmt.Errorf("remote configuration file misconfigured")
+	}
+
+	c.Remote = CheckPathFormat(c.Remote)
+
+	return c.Remote + twinName + "/" + c.File, nil
 }
 
 func (p Processor) GetValidatorMoniker() (string, error) {
 
-	file := p.NodeHome + "validatorMoniker.toml"
+	file := p.NodeHome + "validator_moniker.toml"
 
 	bz, err := ioutil.ReadFile(file)
 	if err != nil {

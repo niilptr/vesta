@@ -1,9 +1,10 @@
 package keeper
 
 import (
+	"vesta/x/twin/types"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"vesta/x/twin/types"
 )
 
 // SetTwin set a specific twin in the store from its index
@@ -60,4 +61,15 @@ func (k Keeper) GetAllTwin(ctx sdk.Context) (list []types.Twin) {
 	}
 
 	return
+}
+
+func (k Keeper) UpdateTwinFromVestaTraining(ctx sdk.Context, name string, hash string) {
+
+	twin, found := k.GetTwin(ctx, name)
+	if !found {
+		k.SetTwin(ctx, types.NewTwin(name, hash, types.ModuleName))
+	}
+
+	twin.LastUpdate = types.GetModuleAddress()
+	k.SetTwin(ctx, twin)
 }

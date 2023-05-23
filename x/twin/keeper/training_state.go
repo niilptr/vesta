@@ -7,14 +7,22 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// SetTraining set training in the store
-func (k Keeper) SetTrainingState(ctx sdk.Context, training types.TrainingState) {
+// SetTrainingStateValue set trainingState value in the store
+func (k Keeper) SetTrainingState(ctx sdk.Context, trainingState types.TrainingState) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
-	b := k.cdc.MustMarshal(&training)
+	b := k.cdc.MustMarshal(&trainingState)
 	store.Set([]byte{0}, b)
 }
 
-// GetTraining returns training
+// SetTrainingStateValue set trainingState value in the store
+func (k Keeper) SetTrainingStateValue(ctx sdk.Context, value bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
+	ts := types.TrainingState{Value: value}
+	b := k.cdc.MustMarshal(&ts)
+	store.Set([]byte{0}, b)
+}
+
+// GetTrainingState returns trainingState
 func (k Keeper) GetTrainingState(ctx sdk.Context) (val types.TrainingState, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
 
@@ -27,7 +35,21 @@ func (k Keeper) GetTrainingState(ctx sdk.Context) (val types.TrainingState, foun
 	return val, true
 }
 
-// RemoveTraining removes training from the store
+// GetTraining returns trainingState
+func (k Keeper) GetTrainingStateValue(ctx sdk.Context) bool {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
+
+	b := store.Get([]byte{0})
+	if b == nil {
+		return false
+	}
+	ts := types.TrainingState{}
+	k.cdc.MustUnmarshal(b, &ts)
+
+	return ts.Value
+}
+
+// RemoveTrainingState removes trainingState from the store
 func (k Keeper) RemoveTrainingState(ctx sdk.Context) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
 	store.Delete([]byte{0})
