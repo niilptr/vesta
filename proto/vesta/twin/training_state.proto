@@ -1,0 +1,8 @@
+syntax = "proto3";
+package vesta.twin;
+
+option go_package = "vesta/x/twin/types";
+
+message TrainingState {
+  bool training_state = 1;
+}

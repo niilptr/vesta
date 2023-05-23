@@ -3,11 +3,12 @@ package twin_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	keepertest "vesta/testutil/keeper"
 	"vesta/testutil/nullify"
 	"vesta/x/twin"
 	"vesta/x/twin/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
@@ -22,6 +23,7 @@ func TestGenesis(t *testing.T) {
 				Name: "1",
 			},
 		},
+		TrainingState: &types.TrainingState{},
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -34,5 +36,6 @@ func TestGenesis(t *testing.T) {
 	nullify.Fill(got)
 
 	require.ElementsMatch(t, genesisState.TwinList, got.TwinList)
+	require.Equal(t, genesisState.TrainingState, got.TrainingState)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

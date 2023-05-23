@@ -3,8 +3,9 @@ package types_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"vesta/x/twin/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -30,6 +31,7 @@ func TestGenesisState_Validate(t *testing.T) {
 						Name: "1",
 					},
 				},
+				TrainingState: &types.TrainingState{},
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,

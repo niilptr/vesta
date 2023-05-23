@@ -45295,6 +45295,38 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
+  /vesta/twin/training:
+    get:
+      summary: Queries a Training by index.
+      operationId: VestaTwinTraining
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Training:
+                type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      tags:
+        - Query
   /vesta/twin/twin:
     get:
       operationId: VestaTwinTwinAll
@@ -75154,6 +75186,11 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+  vesta.twin.QueryGetTrainingResponse:
+    type: object
+    properties:
+      Training:
+        type: object
   vesta.twin.QueryGetTwinResponse:
     type: object
     properties:
@@ -75173,6 +75210,8 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  vesta.twin.Training:
+    type: object
   vesta.twin.Twin:
     type: object
     properties:

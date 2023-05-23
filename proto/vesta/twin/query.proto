@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "vesta/twin/params.proto";
 import "vesta/twin/twin.proto";
+import "vesta/twin/training_state.proto";
 
 option go_package = "vesta/x/twin/types";
 
@@ -26,6 +27,12 @@ service Query {
   }
   rpc TwinAll (QueryAllTwinRequest) returns (QueryAllTwinResponse) {
     option (google.api.http).get = "/vesta/twin/twin";
+  
+  }
+  
+  // Queries a Training by index.
+  rpc TrainingState (QueryGetTrainingStateRequest) returns (QueryGetTrainingStateResponse) {
+    option (google.api.http).get = "/vesta/twin/trainingstate";
   
   }
 }
@@ -54,5 +61,11 @@ message QueryAllTwinRequest {
 message QueryAllTwinResponse {
   repeated Twin                                   twin       = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetTrainingStateRequest {}
+
+message QueryGetTrainingStateResponse {
+  TrainingState training_state = 1 [(gogoproto.nullable) = false];
 }
 
