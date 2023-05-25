@@ -39,6 +39,7 @@ message MsgDeleteTwinResponse {}
 message MsgTrain {
   string creator = 1;
   string name    = 2;
+  string training_configuration_hash = 3;
 }
 
 message MsgTrainResponse {}

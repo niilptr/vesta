@@ -9,10 +9,11 @@ const TypeMsgTrain = "train"
 
 var _ sdk.Msg = &MsgTrain{}
 
-func NewMsgTrain(creator string, name string) *MsgTrain {
+func NewMsgTrain(creator string, name string, trainingHash string) *MsgTrain {
 	return &MsgTrain{
-		Creator: creator,
-		Name:    name,
+		Creator:                   creator,
+		Name:                      name,
+		TrainingConfigurationHash: trainingHash,
 	}
 }
 

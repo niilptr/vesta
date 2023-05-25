@@ -1,9 +1,14 @@
 syntax = "proto3";
 package vesta.twin;
 
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
 option go_package = "vesta/x/twin/types";
 
 message TrainingState {
   bool value = 1;
-  string name = 2;
+  string twin_name = 2;
+  google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string training_configuration_hash = 4;
 }

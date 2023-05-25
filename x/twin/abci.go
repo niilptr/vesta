@@ -4,7 +4,9 @@ package twin
 import (
 	"time"
 
+	"vesta/x/twin/keeper"
 	"vesta/x/twin/processor"
+	"vesta/x/twin/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -24,24 +26,30 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	trainingState, _ := am.keeper.GetTrainingState(ctx)
 	isTraining := trainingState.Value
 	if isTraining {
-		twinName := trainingState.Name
-		ValidatorsTrainingState := processor.GetValidatorsTrainingState(twinName)
-		completed := 0
-		timeout := 0
-		for _, vts := range ValidatorsTrainingState {
-			if vts.HasCompleted {
-				completed++
+		p := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
+		vts, err := p.CheckValidatorsTrainingState(trainingState.TwinName)
+		if err != nil {
+			p.Logger.Error(err.Error())
+		}
+		NunComplete := 0
+		NumTimeout := 0
+		for _, v := range vts {
+			if v.Complete {
+				NunComplete++
 			} else {
-				if ctx.BlockTime().Sub(vts.StartTime) > am.keeper.GetParams(ctx).MaxWaitingTraining {
-					timeout++
+				if ctx.BlockTime().Sub(trainingState.StartTime) > am.keeper.GetParams(ctx).MaxWaitingTraining {
+					NumTimeout++
 				}
 			}
 		}
 
-		if completed+timeout == len(ValidatorsTrainingState) {
-			am.keeper.SetTrainingStateValue(ctx, false)
-			newHash := processor.SetBestTrainingResults(twinName)
-			am.keeper.UpdateTwinFromVestaTraining(ctx, twinName, newHash)
+		if NunComplete+NumTimeout == len(vts) {
+			newHash := processor.SetBestTrainingResults(trainingState.TwinName)
+			am.keeper.UpdateTwinFromVestaTraining(ctx, trainingState.TwinName, newHash)
+			am.keeper.SetTrainingState(ctx, types.TrainingState{
+				Value:    false,
+				TwinName: "",
+			})
 		}
 	}
 }

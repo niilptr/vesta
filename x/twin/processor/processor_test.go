@@ -41,7 +41,9 @@ func TestReadTrainConfiguration(t *testing.T) {
 
 	acctoken, err := p.GetAccessToken()
 	require.NoError(t, err)
-	content, err := p.ReadTrainConfiguration(acctoken, twinName)
+	tdc, twinRemoteURL, remoteURL, err := p.ReadTrainConfiguration(acctoken, twinName)
 	require.NoError(t, err)
-	require.NotEmpty(t, content)
+	require.NotEmpty(t, tdc)
+	require.NotEmpty(t, twinRemoteURL)
+	require.NotEmpty(t, remoteURL)
 }

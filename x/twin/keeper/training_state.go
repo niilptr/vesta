@@ -22,6 +22,14 @@ func (k Keeper) SetTrainingStateValue(ctx sdk.Context, value bool) {
 	store.Set([]byte{0}, b)
 }
 
+// SetTrainingStateValue set trainingState value in the store
+func (k Keeper) SetTrainingStateTwinName(ctx sdk.Context, twinName string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
+	ts := types.TrainingState{TwinName: twinName}
+	b := k.cdc.MustMarshal(&ts)
+	store.Set([]byte{0}, b)
+}
+
 // GetTrainingState returns trainingState
 func (k Keeper) GetTrainingState(ctx sdk.Context) (val types.TrainingState, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
@@ -47,6 +55,20 @@ func (k Keeper) GetTrainingStateValue(ctx sdk.Context) bool {
 	k.cdc.MustUnmarshal(b, &ts)
 
 	return ts.Value
+}
+
+// GetTraining returns trainingState
+func (k Keeper) GetTrainingStateTwinName(ctx sdk.Context) string {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
+
+	b := store.Get([]byte{0})
+	if b == nil {
+		return ""
+	}
+	ts := types.TrainingState{}
+	k.cdc.MustUnmarshal(b, &ts)
+
+	return ts.TwinName
 }
 
 // RemoveTrainingState removes trainingState from the store

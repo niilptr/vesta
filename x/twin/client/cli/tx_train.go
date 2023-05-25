@@ -17,9 +17,10 @@ func CmdTrain() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "train [name]",
 		Short: "Broadcast message train",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argName := args[0]
+			argTrainingHash := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -29,6 +30,7 @@ func CmdTrain() *cobra.Command {
 			msg := types.NewMsgTrain(
 				clientCtx.GetFromAddress().String(),
 				argName,
+				argTrainingHash,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
