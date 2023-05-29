@@ -65,12 +65,28 @@ type ValidatorTrainingState struct {
 }
 
 type ValidatorTrainingResults struct {
-	Validator    string
-	Min_val_loss float64
-	Err_perc     float64
-	R2           float64
-	RAAE         float64
-	RMAE         float64
+	Validator      string
+	Min_val_loss   float32
+	Err_perc       float32
+	R2             float32
+	RAAE           float32
+	RMAE           float32
+	SHA256         string
+	SHAComputation []string
+	NNParams       NNParams
+}
+
+type NNParams struct {
+	NNWeights []NNWeight
+	NNBiases  []NNBias
+}
+
+type NNWeight struct {
+	Value [][]float64
+}
+
+type NNBias struct {
+	Value []float64
 }
 
 type Processor struct {
@@ -243,9 +259,9 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 	return vtd, nil
 }
 
-func (p Processor) StartTraining(ctx sdk.Context, lr float64) {
+func (p Processor) StartTraining() {
 
-	fileToRun := p.NodeHome + "train.py"
+	fileToRun := p.NodeHome + "train.py --input-dir=" + p.NodeHome
 	cmd := exec.Command(fileToRun)
 
 	err := cmd.Start()
@@ -288,7 +304,7 @@ func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []Validato
 	return vts, nil
 }
 
-func (p Processor) ReadValidatorsResults(twinName string) (vtr []ValidatorTrainingResults, err error) {
+func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []ValidatorTrainingResults, err error) {
 
 	accessToken, err := p.GetAccessToken()
 	if err != nil {
@@ -315,6 +331,21 @@ func (p Processor) ReadValidatorsResults(twinName string) (vtr []ValidatorTraini
 	}
 
 	return vtr, nil
+}
+
+func (p Processor) GetBestTrainingResult(vtr []ValidatorTrainingResults) (idx int, trainerMoniker string, newTwinHash string) {
+
+	var best_score float32 = 0
+	for i, v := range vtr {
+		score := (100-v.Err_perc)/100 + v.R2
+		if score > best_score {
+			best_score = score
+			idx = i
+		}
+	}
+
+	return idx, vtr[idx].Validator, vtr[idx].SHA256
+
 }
 
 func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, error) {
@@ -344,4 +375,18 @@ func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, err
 	}
 
 	return body, nil
+}
+
+func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string) (isResultValid bool) {
+
+	fileToRun := p.NodeHome + "validate.py --input-dir=" + p.NodeHome
+	cmd := exec.Command(fileToRun)
+
+	err := cmd.Run()
+	if err != nil {
+		p.Logger.Error(err.Error())
+		return false
+	}
+
+	return true
 }

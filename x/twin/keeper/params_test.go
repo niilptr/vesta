@@ -3,13 +3,14 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	testkeeper "vesta/testutil/keeper"
 	"vesta/x/twin/types"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetParams(t *testing.T) {
-	k, ctx := testkeeper.TwinKeeper(t)
+	k, ctx := testkeeper.NewTestKeeper(t)
 	params := types.DefaultParams()
 
 	k.SetParams(ctx, params)

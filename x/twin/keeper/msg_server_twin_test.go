@@ -17,7 +17,7 @@ import (
 var _ = strconv.IntSize
 
 func TestTwinMsgServerCreate(t *testing.T) {
-	k, ctx := keepertest.TwinKeeper(t)
+	k, ctx := keepertest.NewTestKeeper(t)
 	srv := keeper.NewMsgServerImpl(*k)
 	wctx := sdk.WrapSDKContext(ctx)
 	creator := "A"
@@ -65,7 +65,7 @@ func TestTwinMsgServerUpdate(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			k, ctx := keepertest.TwinKeeper(t)
+			k, ctx := keepertest.NewTestKeeper(t)
 			srv := keeper.NewMsgServerImpl(*k)
 			wctx := sdk.WrapSDKContext(ctx)
 			expected := &types.MsgCreateTwin{Creator: creator,
@@ -119,7 +119,7 @@ func TestTwinMsgServerDelete(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			k, ctx := keepertest.TwinKeeper(t)
+			k, ctx := keepertest.NewTestKeeper(t)
 			srv := keeper.NewMsgServerImpl(*k)
 			wctx := sdk.WrapSDKContext(ctx)
 

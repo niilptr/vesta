@@ -19,7 +19,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 )
 
-func TwinKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
+func NewTestKeeper(t testing.TB) (*keeper.Keeper, sdk.Context) {
 	storeKey := sdk.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 

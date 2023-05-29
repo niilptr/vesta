@@ -14,7 +14,7 @@ import (
 )
 
 func TestTrainingStateQuery(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	item := createTestTrainingState(keeper, ctx, true)
 	for _, tc := range []struct {

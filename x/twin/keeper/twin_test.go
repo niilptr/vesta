@@ -24,7 +24,7 @@ func createNTwin(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Twin {
 }
 
 func TestTwinGet(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	items := createNTwin(keeper, ctx, 10)
 	for _, item := range items {
 		rst, found := keeper.GetTwin(ctx,
@@ -38,7 +38,7 @@ func TestTwinGet(t *testing.T) {
 	}
 }
 func TestTwinRemove(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	items := createNTwin(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveTwin(ctx,
@@ -52,7 +52,7 @@ func TestTwinRemove(t *testing.T) {
 }
 
 func TestTwinGetAll(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	items := createNTwin(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),

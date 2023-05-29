@@ -19,7 +19,7 @@ import (
 var _ = strconv.IntSize
 
 func TestTwinQuerySingle(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNTwin(keeper, ctx, 2)
 	for _, tc := range []struct {
@@ -70,7 +70,7 @@ func TestTwinQuerySingle(t *testing.T) {
 }
 
 func TestTwinQueryPaginated(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	msgs := createNTwin(keeper, ctx, 5)
 

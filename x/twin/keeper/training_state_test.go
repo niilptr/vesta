@@ -18,7 +18,7 @@ func createTestTrainingState(keeper *keeper.Keeper, ctx sdk.Context, value bool)
 }
 
 func TestTrainingStateGet(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	item := createTestTrainingState(keeper, ctx, true)
 	rst, found := keeper.GetTrainingState(ctx)
 	require.True(t, found)
@@ -26,7 +26,7 @@ func TestTrainingStateGet(t *testing.T) {
 }
 
 func TestTrainingStateRemove(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	createTestTrainingState(keeper, ctx, true)
 	keeper.RemoveTrainingState(ctx)
 	_, found := keeper.GetTrainingState(ctx)
@@ -34,7 +34,7 @@ func TestTrainingStateRemove(t *testing.T) {
 }
 
 func TestTrainingStateSetValue(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	_ = createTestTrainingState(keeper, ctx, false)
 
 	ts := types.TrainingState{Value: true}
@@ -45,7 +45,7 @@ func TestTrainingStateSetValue(t *testing.T) {
 }
 
 func TestTrainingStateGetValue(t *testing.T) {
-	keeper, ctx := keepertest.TwinKeeper(t)
+	keeper, ctx := keepertest.NewTestKeeper(t)
 	_ = createTestTrainingState(keeper, ctx, true)
 
 	value := keeper.GetTrainingStateValue(ctx)

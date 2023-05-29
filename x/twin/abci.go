@@ -6,7 +6,6 @@ import (
 
 	"vesta/x/twin/keeper"
 	"vesta/x/twin/processor"
-	"vesta/x/twin/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -25,31 +24,58 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 	trainingState, _ := am.keeper.GetTrainingState(ctx)
 	isTraining := trainingState.Value
+
 	if isTraining {
+
 		p := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
+
 		vts, err := p.CheckValidatorsTrainingState(trainingState.TwinName)
 		if err != nil {
 			p.Logger.Error(err.Error())
 		}
-		NunComplete := 0
-		NumTimeout := 0
+
+		nunComplete := 0
+		numTimeout := 0
 		for _, v := range vts {
 			if v.Complete {
-				NunComplete++
+				nunComplete++
 			} else {
 				if ctx.BlockTime().Sub(trainingState.StartTime) > am.keeper.GetParams(ctx).MaxWaitingTraining {
-					NumTimeout++
+					numTimeout++
 				}
 			}
 		}
 
-		if NunComplete+NumTimeout == len(vts) {
-			newHash := processor.SetBestTrainingResults(trainingState.TwinName)
-			am.keeper.UpdateTwinFromVestaTraining(ctx, trainingState.TwinName, newHash)
-			am.keeper.SetTrainingState(ctx, types.TrainingState{
-				Value:    false,
-				TwinName: "",
-			})
+		// If all complete
+		if nunComplete+numTimeout == len(vts) {
+
+			am.keeper.SetTrainingStateValue(ctx, false)
+
+			vtr, err := p.ReadValidatorsTrainingResults(trainingState.TwinName)
+			if err != nil {
+				p.Logger.Error(err.Error())
+				return
+			}
+
+			isResultValid := false
+			for !isResultValid {
+				idx, trainerMoniker, newTwinHash := p.GetBestTrainingResult(vtr)
+				isResultValid = p.ValidateTrainingResult(trainingState.TwinName, trainerMoniker)
+
+				if isResultValid {
+					am.keeper.UpdateTwinFromVestaTraining(ctx, trainingState.TwinName, newTwinHash)
+
+				} else {
+					// remove not valid result from result slice
+					vtr = append(vtr[:idx], vtr[idx+1:]...)
+
+					// if result slice is empty break
+					if len(vtr) == 0 {
+						p.Logger.Error("All training results are not valid.")
+						break
+					}
+				}
+			}
 		}
 	}
 }
