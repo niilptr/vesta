@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, trainHash string) error {
+func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, trainConfHash string) error {
 
 	isTraining := k.GetTrainingStateValue(ctx)
 
@@ -19,7 +19,7 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 		Value:                     true,
 		TwinName:                  twinName,
 		StartTime:                 ctx.BlockTime(),
-		TrainingConfigurationHash: trainHash,
+		TrainingConfigurationHash: trainConfHash,
 	})
 
 	// Run the local script to train the digital twin.
@@ -30,6 +30,8 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 		if err == nil {
 			go p.StartTraining()
 		}
+	} else {
+		p.Logger.Error("Local training not start.")
 	}
 
 	return nil
