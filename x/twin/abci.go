@@ -58,18 +58,20 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 			}
 
 			isResultValid := false
+			reasonWhyNotValid := ""
 			for !isResultValid {
 				idx, trainerMoniker, newTwinHash := p.GetBestTrainingResult(vtr)
-				isResultValid, err = p.ValidateTrainingResult(trainingState.TwinName, trainerMoniker)
+				isResultValid, reasonWhyNotValid, err = p.ValidateTrainingResult(trainingState.TwinName, trainerMoniker)
 				if err != nil {
 					p.Logger.Error(err.Error())
-					// TODO: if exit code == ... return
+					return
 				}
 
 				if isResultValid {
 					am.keeper.UpdateTwinFromVestaTraining(ctx, trainingState.TwinName, newTwinHash)
 
 				} else {
+					p.Logger.Error(reasonWhyNotValid)
 					// remove not valid result from result slice
 					vtr = append(vtr[:idx], vtr[idx+1:]...)
 

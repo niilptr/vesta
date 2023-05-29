@@ -387,7 +387,7 @@ func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, err
 	return body, nil
 }
 
-func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string) (isResultValid bool, err error) {
+func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string) (isResultValid bool, reasonWhyFalse string, err error) {
 
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
@@ -408,8 +408,22 @@ func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string
 
 	if err != nil {
 		p.Logger.Error(err.Error())
-		return false, err
+
+		// Stderr is empty if results are valid.
+		if len(stderr) > 3 {
+
+			if stderr[:4] == "Fail" {
+				// Errors related to process failures returns an error code different from 0 and
+				// a message in the stderr that starts with "Fail".
+				return false, "", fmt.Errorf(stderr)
+
+			} else {
+				// When the results are not valid an error code different from 0 is returned and a
+				// message in the stderr that does not start with "Fail", explaining the cause.
+				return false, stderr, nil
+			}
+		}
 	}
 
-	return true, nil
+	return true, "", nil
 }

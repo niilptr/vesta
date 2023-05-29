@@ -41,8 +41,9 @@ func TestTrain(t *testing.T) {
 
 func TestValidateTrainingResult(t *testing.T) {
 	p := processortest.NewTestProcessor(t)
-	isResultValid, err := p.ValidateTrainingResult(testTwinName, testTrainerMoniker)
+	isResultValid, reasonWhyFalse, err := p.ValidateTrainingResult(testTwinName, testTrainerMoniker)
 	require.NoError(t, err)
 	require.True(t, isResultValid)
+	require.Empty(t, reasonWhyFalse)
 
 }
