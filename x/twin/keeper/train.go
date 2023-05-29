@@ -28,7 +28,7 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 	_, err := p.PrepareTraining(ctx, twinName)
 	if err == nil {
 		if err == nil {
-			go p.StartTraining()
+			go p.Train()
 		}
 	} else {
 		p.Logger.Error("Local training not start.")

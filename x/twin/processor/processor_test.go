@@ -8,6 +8,9 @@ import (
 	processortest "vesta/testutil/processor"
 )
 
+const testTwinName = "eva00"
+const testTrainerMoniker = "val1"
+
 func TestGetAccessToken(t *testing.T) {
 
 	p := processortest.NewTestProcessor(t)
@@ -20,13 +23,26 @@ func TestGetAccessToken(t *testing.T) {
 func TestReadTrainConfiguration(t *testing.T) {
 
 	p := processortest.NewTestProcessor(t)
-	twinName := "eva00"
 
 	acctoken, err := p.GetAccessToken()
 	require.NoError(t, err)
-	tdc, twinRemoteURL, remoteURL, err := p.ReadTrainConfiguration(acctoken, twinName)
+	tdc, twinRemoteURL, remoteURL, err := p.ReadTrainConfiguration(acctoken, testTwinName)
 	require.NoError(t, err)
 	require.NotEmpty(t, tdc)
 	require.NotEmpty(t, twinRemoteURL)
 	require.NotEmpty(t, remoteURL)
+}
+
+func TestTrain(t *testing.T) {
+	p := processortest.NewTestProcessor(t)
+	err := p.Train()
+	require.NoError(t, err)
+}
+
+func TestValidateTrainingResult(t *testing.T) {
+	p := processortest.NewTestProcessor(t)
+	isResultValid, err := p.ValidateTrainingResult(testTwinName, testTrainerMoniker)
+	require.NoError(t, err)
+	require.True(t, isResultValid)
+
 }

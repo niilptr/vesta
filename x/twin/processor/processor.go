@@ -1,6 +1,7 @@
 package processor
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -259,20 +260,29 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 	return vtd, nil
 }
 
-func (p Processor) StartTraining() {
+func (p Processor) Train() error {
 
-	fileToRun := p.NodeHome + "train.py --input-dir=" + p.NodeHome
-	cmd := exec.Command(fileToRun)
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 
-	err := cmd.Start()
+	scriptPath := p.NodeHome + "train.py"
+
+	cmd := exec.Command("python", scriptPath, "--input-dir", p.NodeHome)
+	cmd.Stdout = &stdoutBuf
+	cmd.Stderr = &stderrBuf
+
+	err := cmd.Run()
 	if err != nil {
 		p.Logger.Error(err.Error())
 	}
 
-	err = cmd.Wait()
-	if err != nil {
-		p.Logger.Error(err.Error())
-	}
+	stdout := stdoutBuf.String()
+	stderr := stderrBuf.String()
+
+	p.Logger.Error(fmt.Sprintf("Captured training stdout\n%s\n", stdout))
+	p.Logger.Error(fmt.Sprintf("Captured training stderr\n%s\n", stderr))
+
+	return err
 }
 
 func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []ValidatorTrainingState, err error) {
@@ -377,16 +387,29 @@ func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, err
 	return body, nil
 }
 
-func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string) (isResultValid bool) {
+func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string) (isResultValid bool, err error) {
 
-	fileToRun := p.NodeHome + "validate.py --input-dir=" + p.NodeHome
-	cmd := exec.Command(fileToRun)
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 
-	err := cmd.Run()
+	scriptPath := p.NodeHome + "validate.py"
+
+	cmd := exec.Command("python", scriptPath, "--input-dir", p.NodeHome)
+	cmd.Stdout = &stdoutBuf
+	cmd.Stderr = &stderrBuf
+
+	err = cmd.Run()
+
+	stdout := stdoutBuf.String()
+	stderr := stderrBuf.String()
+
+	p.Logger.Error(fmt.Sprintf("Captured training stdout\n%s\n", stdout))
+	p.Logger.Error(fmt.Sprintf("Captured training stderr\n%s\n", stderr))
+
 	if err != nil {
 		p.Logger.Error(err.Error())
-		return false
+		return false, err
 	}
 
-	return true
+	return true, nil
 }

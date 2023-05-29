@@ -60,7 +60,11 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 			isResultValid := false
 			for !isResultValid {
 				idx, trainerMoniker, newTwinHash := p.GetBestTrainingResult(vtr)
-				isResultValid = p.ValidateTrainingResult(trainingState.TwinName, trainerMoniker)
+				isResultValid, err = p.ValidateTrainingResult(trainingState.TwinName, trainerMoniker)
+				if err != nil {
+					p.Logger.Error(err.Error())
+					// TODO: if exit code == ... return
+				}
 
 				if isResultValid {
 					am.keeper.UpdateTwinFromVestaTraining(ctx, trainingState.TwinName, newTwinHash)
