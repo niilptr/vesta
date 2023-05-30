@@ -11,7 +11,8 @@ message TrainingState {
   string twin_name = 2;
   google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string training_configuration_hash = 4;
-  ValidationState validation_state = 5;
+  repeated string training_phase_ended_confirmations = 5;
+  ValidationState validation_state = 6;
 }
 
 message ValidationState {
