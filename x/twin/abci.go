@@ -42,6 +42,7 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingStat
 	vts, err := p.CheckValidatorsTrainingState(ts.TwinName)
 	if err != nil {
 		p.Logger.Error(err.Error())
+		return
 	}
 
 	nunComplete := 0
