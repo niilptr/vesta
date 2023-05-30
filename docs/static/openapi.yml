@@ -45272,6 +45272,9 @@ paths:
               params:
                 description: params holds all the parameters of this module.
                 type: object
+                properties:
+                  max_waiting_training:
+                    type: string
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -45295,18 +45298,40 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /vesta/twin/training:
+  /vesta/twin/trainingstate:
     get:
       summary: Queries a Training by index.
-      operationId: VestaTwinTraining
+      operationId: VestaTwinTrainingState
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              Training:
+              training_state:
                 type: object
+                properties:
+                  value:
+                    type: boolean
+                  twin_name:
+                    type: string
+                  start_time:
+                    type: string
+                    format: date-time
+                  training_configuration_hash:
+                    type: string
+                  validation_state:
+                    type: object
+                    properties:
+                      value:
+                        type: boolean
+                      start_time:
+                        type: string
+                        format: date-time
+                      map_validators_bestresulthash:
+                        type: object
+                        additionalProperties:
+                          type: string
         default:
           description: An unexpected error response.
           schema:
@@ -45346,6 +45371,8 @@ paths:
                     hash:
                       type: string
                     creator:
+                      type: string
+                    last_update:
                       type: string
               pagination:
                 type: object
@@ -45470,6 +45497,8 @@ paths:
                   hash:
                     type: string
                   creator:
+                    type: string
+                  last_update:
                     type: string
         default:
           description: An unexpected error response.
@@ -75135,6 +75164,10 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  vesta.twin.MsgConfirmBestTrainResultIsResponse:
+    type: object
+  vesta.twin.MsgConfirmTrainPhaseEndedResponse:
+    type: object
   vesta.twin.MsgCreateTwinResponse:
     type: object
   vesta.twin.MsgDeleteTwinResponse:
@@ -75145,6 +75178,9 @@ definitions:
     type: object
   vesta.twin.Params:
     type: object
+    properties:
+      max_waiting_training:
+        type: string
     description: Params defines the parameters for the module.
   vesta.twin.QueryAllTwinResponse:
     type: object
@@ -75159,6 +75195,8 @@ definitions:
             hash:
               type: string
             creator:
+              type: string
+            last_update:
               type: string
       pagination:
         type: object
@@ -75186,11 +75224,33 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  vesta.twin.QueryGetTrainingResponse:
+  vesta.twin.QueryGetTrainingStateResponse:
     type: object
     properties:
-      Training:
+      training_state:
         type: object
+        properties:
+          value:
+            type: boolean
+          twin_name:
+            type: string
+          start_time:
+            type: string
+            format: date-time
+          training_configuration_hash:
+            type: string
+          validation_state:
+            type: object
+            properties:
+              value:
+                type: boolean
+              start_time:
+                type: string
+                format: date-time
+              map_validators_bestresulthash:
+                type: object
+                additionalProperties:
+                  type: string
   vesta.twin.QueryGetTwinResponse:
     type: object
     properties:
@@ -75203,15 +75263,42 @@ definitions:
             type: string
           creator:
             type: string
+          last_update:
+            type: string
   vesta.twin.QueryParamsResponse:
     type: object
     properties:
       params:
         description: params holds all the parameters of this module.
         type: object
+        properties:
+          max_waiting_training:
+            type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
-  vesta.twin.Training:
+  vesta.twin.TrainingState:
     type: object
+    properties:
+      value:
+        type: boolean
+      twin_name:
+        type: string
+      start_time:
+        type: string
+        format: date-time
+      training_configuration_hash:
+        type: string
+      validation_state:
+        type: object
+        properties:
+          value:
+            type: boolean
+          start_time:
+            type: string
+            format: date-time
+          map_validators_bestresulthash:
+            type: object
+            additionalProperties:
+              type: string
   vesta.twin.Twin:
     type: object
     properties:
@@ -75221,3 +75308,17 @@ definitions:
         type: string
       creator:
         type: string
+      last_update:
+        type: string
+  vesta.twin.ValidationState:
+    type: object
+    properties:
+      value:
+        type: boolean
+      start_time:
+        type: string
+        format: date-time
+      map_validators_bestresulthash:
+        type: object
+        additionalProperties:
+          type: string

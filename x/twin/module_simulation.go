@@ -40,6 +40,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgTrain int = 100
 
+	opWeightMsgConfirmTrainPhaseEnded = "op_weight_msg_confirm_train_phase_ended"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgConfirmTrainPhaseEnded int = 100
+
+	opWeightMsgConfirmBestTrainResultIs = "op_weight_msg_confirm_best_train_result_is"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgConfirmBestTrainResultIs int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -126,6 +134,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgTrain,
 		twinsimulation.SimulateMsgTrain(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgConfirmTrainPhaseEnded int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgConfirmTrainPhaseEnded, &weightMsgConfirmTrainPhaseEnded, nil,
+		func(_ *rand.Rand) {
+			weightMsgConfirmTrainPhaseEnded = defaultWeightMsgConfirmTrainPhaseEnded
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgConfirmTrainPhaseEnded,
+		twinsimulation.SimulateMsgConfirmTrainPhaseEnded(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgConfirmBestTrainResultIs int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgConfirmBestTrainResultIs, &weightMsgConfirmBestTrainResultIs, nil,
+		func(_ *rand.Rand) {
+			weightMsgConfirmBestTrainResultIs = defaultWeightMsgConfirmBestTrainResultIs
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgConfirmBestTrainResultIs,
+		twinsimulation.SimulateMsgConfirmBestTrainResultIs(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

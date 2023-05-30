@@ -8,10 +8,12 @@ option go_package = "vesta/x/twin/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc CreateTwin (MsgCreateTwin) returns (MsgCreateTwinResponse);
-  rpc UpdateTwin (MsgUpdateTwin) returns (MsgUpdateTwinResponse);
-  rpc DeleteTwin (MsgDeleteTwin) returns (MsgDeleteTwinResponse);
-  rpc Train      (MsgTrain     ) returns (MsgTrainResponse     );
+  rpc CreateTwin               (MsgCreateTwin              ) returns (MsgCreateTwinResponse              );
+  rpc UpdateTwin               (MsgUpdateTwin              ) returns (MsgUpdateTwinResponse              );
+  rpc DeleteTwin               (MsgDeleteTwin              ) returns (MsgDeleteTwinResponse              );
+  rpc Train                    (MsgTrain                   ) returns (MsgTrainResponse                   );
+  rpc ConfirmTrainPhaseEnded   (MsgConfirmTrainPhaseEnded  ) returns (MsgConfirmTrainPhaseEndedResponse  );
+  rpc ConfirmBestTrainResultIs (MsgConfirmBestTrainResultIs) returns (MsgConfirmBestTrainResultIsResponse);
 }
 message MsgCreateTwin {
   string creator = 1;
@@ -37,10 +39,23 @@ message MsgDeleteTwin {
 message MsgDeleteTwinResponse {}
 
 message MsgTrain {
-  string creator = 1;
-  string name    = 2;
+  string creator                     = 1;
+  string name                        = 2;
   string training_configuration_hash = 3;
 }
 
 message MsgTrainResponse {}
+
+message MsgConfirmTrainPhaseEnded {
+  string creator = 1;
+}
+
+message MsgConfirmTrainPhaseEndedResponse {}
+
+message MsgConfirmBestTrainResultIs {
+  string creator = 1;
+  string hash    = 2;
+}
+
+message MsgConfirmBestTrainResultIsResponse {}
 

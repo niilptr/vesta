@@ -403,6 +403,174 @@ func (m *MsgTrainResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgTrainResponse proto.InternalMessageInfo
 
+type MsgConfirmTrainPhaseEnded struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+}
+
+func (m *MsgConfirmTrainPhaseEnded) Reset()         { *m = MsgConfirmTrainPhaseEnded{} }
+func (m *MsgConfirmTrainPhaseEnded) String() string { return proto.CompactTextString(m) }
+func (*MsgConfirmTrainPhaseEnded) ProtoMessage()    {}
+func (*MsgConfirmTrainPhaseEnded) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6c3711a884c614b8, []int{8}
+}
+func (m *MsgConfirmTrainPhaseEnded) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgConfirmTrainPhaseEnded) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgConfirmTrainPhaseEnded.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgConfirmTrainPhaseEnded) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgConfirmTrainPhaseEnded.Merge(m, src)
+}
+func (m *MsgConfirmTrainPhaseEnded) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgConfirmTrainPhaseEnded) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgConfirmTrainPhaseEnded.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgConfirmTrainPhaseEnded proto.InternalMessageInfo
+
+func (m *MsgConfirmTrainPhaseEnded) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+type MsgConfirmTrainPhaseEndedResponse struct {
+}
+
+func (m *MsgConfirmTrainPhaseEndedResponse) Reset()         { *m = MsgConfirmTrainPhaseEndedResponse{} }
+func (m *MsgConfirmTrainPhaseEndedResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgConfirmTrainPhaseEndedResponse) ProtoMessage()    {}
+func (*MsgConfirmTrainPhaseEndedResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6c3711a884c614b8, []int{9}
+}
+func (m *MsgConfirmTrainPhaseEndedResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgConfirmTrainPhaseEndedResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgConfirmTrainPhaseEndedResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgConfirmTrainPhaseEndedResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgConfirmTrainPhaseEndedResponse.Merge(m, src)
+}
+func (m *MsgConfirmTrainPhaseEndedResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgConfirmTrainPhaseEndedResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgConfirmTrainPhaseEndedResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgConfirmTrainPhaseEndedResponse proto.InternalMessageInfo
+
+type MsgConfirmBestTrainResultIs struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Hash    string `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
+}
+
+func (m *MsgConfirmBestTrainResultIs) Reset()         { *m = MsgConfirmBestTrainResultIs{} }
+func (m *MsgConfirmBestTrainResultIs) String() string { return proto.CompactTextString(m) }
+func (*MsgConfirmBestTrainResultIs) ProtoMessage()    {}
+func (*MsgConfirmBestTrainResultIs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6c3711a884c614b8, []int{10}
+}
+func (m *MsgConfirmBestTrainResultIs) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgConfirmBestTrainResultIs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgConfirmBestTrainResultIs.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgConfirmBestTrainResultIs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgConfirmBestTrainResultIs.Merge(m, src)
+}
+func (m *MsgConfirmBestTrainResultIs) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgConfirmBestTrainResultIs) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgConfirmBestTrainResultIs.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgConfirmBestTrainResultIs proto.InternalMessageInfo
+
+func (m *MsgConfirmBestTrainResultIs) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgConfirmBestTrainResultIs) GetHash() string {
+	if m != nil {
+		return m.Hash
+	}
+	return ""
+}
+
+type MsgConfirmBestTrainResultIsResponse struct {
+}
+
+func (m *MsgConfirmBestTrainResultIsResponse) Reset()         { *m = MsgConfirmBestTrainResultIsResponse{} }
+func (m *MsgConfirmBestTrainResultIsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgConfirmBestTrainResultIsResponse) ProtoMessage()    {}
+func (*MsgConfirmBestTrainResultIsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6c3711a884c614b8, []int{11}
+}
+func (m *MsgConfirmBestTrainResultIsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgConfirmBestTrainResultIsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgConfirmBestTrainResultIsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgConfirmBestTrainResultIsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgConfirmBestTrainResultIsResponse.Merge(m, src)
+}
+func (m *MsgConfirmBestTrainResultIsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgConfirmBestTrainResultIsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgConfirmBestTrainResultIsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgConfirmBestTrainResultIsResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgCreateTwin)(nil), "vesta.twin.MsgCreateTwin")
 	proto.RegisterType((*MsgCreateTwinResponse)(nil), "vesta.twin.MsgCreateTwinResponse")
@@ -412,33 +580,44 @@ func init() {
 	proto.RegisterType((*MsgDeleteTwinResponse)(nil), "vesta.twin.MsgDeleteTwinResponse")
 	proto.RegisterType((*MsgTrain)(nil), "vesta.twin.MsgTrain")
 	proto.RegisterType((*MsgTrainResponse)(nil), "vesta.twin.MsgTrainResponse")
+	proto.RegisterType((*MsgConfirmTrainPhaseEnded)(nil), "vesta.twin.MsgConfirmTrainPhaseEnded")
+	proto.RegisterType((*MsgConfirmTrainPhaseEndedResponse)(nil), "vesta.twin.MsgConfirmTrainPhaseEndedResponse")
+	proto.RegisterType((*MsgConfirmBestTrainResultIs)(nil), "vesta.twin.MsgConfirmBestTrainResultIs")
+	proto.RegisterType((*MsgConfirmBestTrainResultIsResponse)(nil), "vesta.twin.MsgConfirmBestTrainResultIsResponse")
 }
 
 func init() { proto.RegisterFile("vesta/twin/tx.proto", fileDescriptor_6c3711a884c614b8) }
 
 var fileDescriptor_6c3711a884c614b8 = []byte{
-	// 336 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x2e, 0x4b, 0x2d, 0x2e,
-	0x49, 0xd4, 0x2f, 0x29, 0xcf, 0xcc, 0xd3, 0x2f, 0xa9, 0xd0, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17,
-	0xe2, 0x02, 0x0b, 0xea, 0x81, 0x04, 0xa5, 0x44, 0x91, 0x15, 0x94, 0x67, 0xe6, 0x41, 0x94, 0x28,
-	0x05, 0x72, 0xf1, 0xfa, 0x16, 0xa7, 0x3b, 0x17, 0xa5, 0x26, 0x96, 0xa4, 0x86, 0x94, 0x67, 0xe6,
-	0x09, 0x49, 0x70, 0xb1, 0x27, 0x83, 0x78, 0xf9, 0x45, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41,
-	0x30, 0xae, 0x90, 0x10, 0x17, 0x4b, 0x5e, 0x62, 0x6e, 0xaa, 0x04, 0x13, 0x58, 0x18, 0xcc, 0x06,
-	0x89, 0x65, 0x24, 0x16, 0x67, 0x48, 0x30, 0x43, 0xc4, 0x40, 0x6c, 0x25, 0x71, 0x2e, 0x51, 0x14,
-	0x23, 0x83, 0x52, 0x8b, 0x0b, 0xf2, 0xf3, 0x8a, 0x53, 0xa1, 0x76, 0x85, 0x16, 0xa4, 0x50, 0xdb,
-	0x2e, 0x84, 0x91, 0x70, 0xbb, 0x6c, 0xc1, 0x76, 0xb9, 0xa4, 0xe6, 0xa4, 0x92, 0x63, 0x17, 0xd4,
-	0x5c, 0x84, 0x76, 0xb8, 0xb9, 0x15, 0x5c, 0x1c, 0xbe, 0xc5, 0xe9, 0x21, 0x45, 0x89, 0x24, 0x3b,
-	0xdf, 0x8e, 0x4b, 0xba, 0x04, 0xa4, 0x2d, 0x33, 0x2f, 0x3d, 0x3e, 0x39, 0x3f, 0x2f, 0x2d, 0x33,
-	0xbd, 0xb4, 0x28, 0xb1, 0x24, 0x33, 0x3f, 0x2f, 0x1e, 0xc9, 0x57, 0x92, 0x30, 0x25, 0xce, 0xc8,
-	0x2a, 0x3c, 0x40, 0x5e, 0x15, 0xe2, 0x12, 0x80, 0xd9, 0x0c, 0x73, 0x8d, 0xd1, 0x32, 0x26, 0x2e,
-	0x66, 0xdf, 0xe2, 0x74, 0x21, 0x2f, 0x2e, 0x2e, 0xa4, 0x28, 0x94, 0xd4, 0x43, 0xc4, 0xbb, 0x1e,
-	0x4a, 0x54, 0x48, 0x29, 0xe2, 0x94, 0x82, 0x99, 0x09, 0x32, 0x0b, 0x29, 0x8a, 0xd0, 0xcd, 0x42,
-	0x48, 0x61, 0x98, 0x85, 0x19, 0x0b, 0x20, 0xb3, 0x90, 0xa2, 0x00, 0xdd, 0x2c, 0x84, 0x14, 0x86,
-	0x59, 0x98, 0x21, 0x2f, 0x64, 0xcd, 0xc5, 0x0a, 0x09, 0x76, 0x11, 0x34, 0xb5, 0x60, 0x51, 0x29,
-	0x19, 0x6c, 0xa2, 0x30, 0xcd, 0x4e, 0x3a, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8,
-	0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7,
-	0x10, 0x25, 0x04, 0xc9, 0x17, 0x15, 0xd0, 0x9c, 0x51, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0xce,
-	0x1b, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x61, 0xfe, 0x3a, 0x5d, 0x55, 0x03, 0x00, 0x00,
+	// 434 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0x4d, 0x4f, 0xea, 0x40,
+	0x14, 0xa5, 0xc0, 0xfb, 0xba, 0xc9, 0x4b, 0x5e, 0xe6, 0x3d, 0xde, 0x2b, 0xe5, 0xa5, 0x11, 0x08,
+	0xd1, 0x85, 0x96, 0x44, 0xe3, 0xca, 0xe8, 0x02, 0x34, 0xf1, 0x23, 0x24, 0x4a, 0x70, 0xe3, 0x86,
+	0x54, 0x18, 0x4b, 0x13, 0x98, 0x36, 0x9d, 0x41, 0xf0, 0x3f, 0xb8, 0xf0, 0x67, 0xb9, 0x64, 0xe9,
+	0xd2, 0xc0, 0x1f, 0x31, 0x33, 0xa5, 0x1f, 0xb4, 0x94, 0xa0, 0x71, 0x37, 0x73, 0xee, 0xb9, 0xe7,
+	0xcc, 0x9d, 0x39, 0x19, 0xf8, 0x7d, 0x8f, 0x29, 0xd3, 0xab, 0x6c, 0x64, 0x92, 0x2a, 0x1b, 0x6b,
+	0xb6, 0x63, 0x31, 0x0b, 0x81, 0x00, 0x35, 0x0e, 0x2a, 0xb9, 0x30, 0x61, 0x64, 0x12, 0x97, 0x52,
+	0xba, 0x82, 0x9f, 0x0d, 0x6a, 0xd4, 0x1d, 0xac, 0x33, 0xdc, 0x1a, 0x99, 0x04, 0xc9, 0xf0, 0xad,
+	0xc3, 0x77, 0x96, 0x23, 0x4b, 0x1b, 0xd2, 0xd6, 0x8f, 0xa6, 0xb7, 0x45, 0x08, 0xb2, 0x44, 0x1f,
+	0x60, 0x39, 0x2d, 0x60, 0xb1, 0xe6, 0x58, 0x4f, 0xa7, 0x3d, 0x39, 0xe3, 0x62, 0x7c, 0x5d, 0xfa,
+	0x07, 0xb9, 0x05, 0xc9, 0x26, 0xa6, 0xb6, 0x45, 0x28, 0x9e, 0x7b, 0x5d, 0xdb, 0xdd, 0xcf, 0xf6,
+	0x0a, 0x24, 0x7d, 0xaf, 0x43, 0xe1, 0x75, 0x8c, 0xfb, 0xf8, 0x23, 0x5e, 0x73, 0xdd, 0xa0, 0xdd,
+	0xd7, 0x1d, 0xc3, 0xf7, 0x06, 0x35, 0x5a, 0x8e, 0xfe, 0xee, 0xe3, 0x1f, 0x41, 0x81, 0xf1, 0x36,
+	0x93, 0x18, 0xed, 0x8e, 0x45, 0xee, 0x4c, 0x63, 0xe8, 0xe8, 0xcc, 0xb4, 0x48, 0x3b, 0x34, 0x55,
+	0xde, 0xa3, 0xd4, 0xc3, 0x8c, 0x53, 0x3e, 0x2a, 0x82, 0x5f, 0x9e, 0xb3, 0x7f, 0x9a, 0x7d, 0xc8,
+	0xf3, 0xab, 0xe6, 0x5c, 0x67, 0x20, 0x4a, 0x97, 0x3d, 0x9d, 0xe2, 0x13, 0xd2, 0xc5, 0xdd, 0xe4,
+	0xe3, 0x95, 0xca, 0x50, 0x4c, 0x6c, 0xf3, 0xb5, 0x2f, 0xa0, 0x10, 0x90, 0x6a, 0x98, 0x32, 0xcf,
+	0x7a, 0xd8, 0x67, 0x67, 0x74, 0xf5, 0xf0, 0x62, 0xa2, 0x74, 0xe8, 0x9d, 0x2a, 0x50, 0x5e, 0x21,
+	0xe6, 0x79, 0xee, 0x3e, 0x66, 0x21, 0xd3, 0xa0, 0x06, 0x3a, 0x07, 0x08, 0x45, 0x32, 0xaf, 0x05,
+	0x39, 0xd6, 0x16, 0xa2, 0xa5, 0x14, 0x13, 0x4b, 0x9e, 0x26, 0xd7, 0x0a, 0x45, 0x2e, 0xaa, 0x15,
+	0x94, 0x62, 0x5a, 0xf1, 0x54, 0x71, 0xad, 0x50, 0xa4, 0xa2, 0x5a, 0x41, 0x29, 0xa6, 0x15, 0x4f,
+	0x12, 0x3a, 0x80, 0x2f, 0x6e, 0x8c, 0xfe, 0x44, 0xb8, 0x02, 0x55, 0xfe, 0x2f, 0x43, 0xfd, 0x66,
+	0x02, 0x7f, 0x13, 0x5e, 0xbd, 0x12, 0xbd, 0x91, 0xa5, 0x34, 0x65, 0x67, 0x2d, 0x9a, 0xef, 0xc7,
+	0x40, 0x4e, 0x4c, 0xc2, 0xe6, 0x72, 0xa9, 0x18, 0x51, 0xa9, 0xae, 0x49, 0xf4, 0x5c, 0x6b, 0xdb,
+	0xcf, 0x53, 0x55, 0x9a, 0x4c, 0x55, 0xe9, 0x75, 0xaa, 0x4a, 0x4f, 0x33, 0x35, 0x35, 0x99, 0xa9,
+	0xa9, 0x97, 0x99, 0x9a, 0xba, 0x41, 0xee, 0x6f, 0x36, 0x9e, 0xff, 0x67, 0x0f, 0x36, 0xa6, 0xb7,
+	0x5f, 0xc5, 0x8f, 0xb6, 0xf7, 0x16, 0x00, 0x00, 0xff, 0xff, 0xa1, 0x09, 0x5d, 0x8e, 0x0b, 0x05,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -457,6 +636,8 @@ type MsgClient interface {
 	UpdateTwin(ctx context.Context, in *MsgUpdateTwin, opts ...grpc.CallOption) (*MsgUpdateTwinResponse, error)
 	DeleteTwin(ctx context.Context, in *MsgDeleteTwin, opts ...grpc.CallOption) (*MsgDeleteTwinResponse, error)
 	Train(ctx context.Context, in *MsgTrain, opts ...grpc.CallOption) (*MsgTrainResponse, error)
+	ConfirmTrainPhaseEnded(ctx context.Context, in *MsgConfirmTrainPhaseEnded, opts ...grpc.CallOption) (*MsgConfirmTrainPhaseEndedResponse, error)
+	ConfirmBestTrainResultIs(ctx context.Context, in *MsgConfirmBestTrainResultIs, opts ...grpc.CallOption) (*MsgConfirmBestTrainResultIsResponse, error)
 }
 
 type msgClient struct {
@@ -503,12 +684,32 @@ func (c *msgClient) Train(ctx context.Context, in *MsgTrain, opts ...grpc.CallOp
 	return out, nil
 }
 
+func (c *msgClient) ConfirmTrainPhaseEnded(ctx context.Context, in *MsgConfirmTrainPhaseEnded, opts ...grpc.CallOption) (*MsgConfirmTrainPhaseEndedResponse, error) {
+	out := new(MsgConfirmTrainPhaseEndedResponse)
+	err := c.cc.Invoke(ctx, "/vesta.twin.Msg/ConfirmTrainPhaseEnded", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ConfirmBestTrainResultIs(ctx context.Context, in *MsgConfirmBestTrainResultIs, opts ...grpc.CallOption) (*MsgConfirmBestTrainResultIsResponse, error) {
+	out := new(MsgConfirmBestTrainResultIsResponse)
+	err := c.cc.Invoke(ctx, "/vesta.twin.Msg/ConfirmBestTrainResultIs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	CreateTwin(context.Context, *MsgCreateTwin) (*MsgCreateTwinResponse, error)
 	UpdateTwin(context.Context, *MsgUpdateTwin) (*MsgUpdateTwinResponse, error)
 	DeleteTwin(context.Context, *MsgDeleteTwin) (*MsgDeleteTwinResponse, error)
 	Train(context.Context, *MsgTrain) (*MsgTrainResponse, error)
+	ConfirmTrainPhaseEnded(context.Context, *MsgConfirmTrainPhaseEnded) (*MsgConfirmTrainPhaseEndedResponse, error)
+	ConfirmBestTrainResultIs(context.Context, *MsgConfirmBestTrainResultIs) (*MsgConfirmBestTrainResultIsResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -526,6 +727,12 @@ func (*UnimplementedMsgServer) DeleteTwin(ctx context.Context, req *MsgDeleteTwi
 }
 func (*UnimplementedMsgServer) Train(ctx context.Context, req *MsgTrain) (*MsgTrainResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Train not implemented")
+}
+func (*UnimplementedMsgServer) ConfirmTrainPhaseEnded(ctx context.Context, req *MsgConfirmTrainPhaseEnded) (*MsgConfirmTrainPhaseEndedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmTrainPhaseEnded not implemented")
+}
+func (*UnimplementedMsgServer) ConfirmBestTrainResultIs(ctx context.Context, req *MsgConfirmBestTrainResultIs) (*MsgConfirmBestTrainResultIsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConfirmBestTrainResultIs not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -604,6 +811,42 @@ func _Msg_Train_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_ConfirmTrainPhaseEnded_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgConfirmTrainPhaseEnded)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ConfirmTrainPhaseEnded(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/vesta.twin.Msg/ConfirmTrainPhaseEnded",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ConfirmTrainPhaseEnded(ctx, req.(*MsgConfirmTrainPhaseEnded))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ConfirmBestTrainResultIs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgConfirmBestTrainResultIs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ConfirmBestTrainResultIs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/vesta.twin.Msg/ConfirmBestTrainResultIs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ConfirmBestTrainResultIs(ctx, req.(*MsgConfirmBestTrainResultIs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "vesta.twin.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -623,6 +866,14 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Train",
 			Handler:    _Msg_Train_Handler,
+		},
+		{
+			MethodName: "ConfirmTrainPhaseEnded",
+			Handler:    _Msg_ConfirmTrainPhaseEnded_Handler,
+		},
+		{
+			MethodName: "ConfirmBestTrainResultIs",
+			Handler:    _Msg_ConfirmBestTrainResultIs_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -890,6 +1141,119 @@ func (m *MsgTrainResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgConfirmTrainPhaseEnded) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgConfirmTrainPhaseEnded) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgConfirmTrainPhaseEnded) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgConfirmTrainPhaseEndedResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgConfirmTrainPhaseEndedResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgConfirmTrainPhaseEndedResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgConfirmBestTrainResultIs) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgConfirmBestTrainResultIs) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgConfirmBestTrainResultIs) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Hash) > 0 {
+		i -= len(m.Hash)
+		copy(dAtA[i:], m.Hash)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Hash)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgConfirmBestTrainResultIsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgConfirmBestTrainResultIsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgConfirmBestTrainResultIsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1009,6 +1373,54 @@ func (m *MsgTrain) Size() (n int) {
 }
 
 func (m *MsgTrainResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgConfirmTrainPhaseEnded) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgConfirmTrainPhaseEndedResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgConfirmBestTrainResultIs) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Hash)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgConfirmBestTrainResultIsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1752,6 +2164,302 @@ func (m *MsgTrainResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgTrainResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgConfirmTrainPhaseEnded) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgConfirmTrainPhaseEnded: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgConfirmTrainPhaseEnded: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgConfirmTrainPhaseEndedResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgConfirmTrainPhaseEndedResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgConfirmTrainPhaseEndedResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgConfirmBestTrainResultIs) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgConfirmBestTrainResultIs: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgConfirmBestTrainResultIs: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hash", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Hash = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgConfirmBestTrainResultIsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgConfirmBestTrainResultIsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgConfirmBestTrainResultIsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
