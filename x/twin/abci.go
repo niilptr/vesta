@@ -13,12 +13,21 @@ import (
 
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
-	trainingState, _ := am.keeper.GetTrainingState(ctx)
-	isTraining := trainingState.Value
+	ts, _ := am.keeper.GetTrainingState(ctx)
+	isTraining := ts.Value
+	isValidating := ts.ValidationState.Value
 
 	if isTraining {
-		am.HandleTrainingResults(ctx, trainingState)
+		am.HandleTrainingResults(ctx, ts)
 	}
+
+	if isValidating {
+		// TODO: controlla quanti hanno broadcastato il best result
+		//
+
+		am.HandleValidationPhase(ctx, ts)
+	}
+
 }
 
 // EndBlock contains the logic that is automatically triggered at the end of each block
@@ -26,10 +35,11 @@ func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valid
 	return []abci.ValidatorUpdate{}
 }
 
-func (am AppModule) HandleTrainingResults(ctx sdk.Context, trainingState types.TrainingState) {
+func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingState) {
+
 	p := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
 
-	vts, err := p.CheckValidatorsTrainingState(trainingState.TwinName)
+	vts, err := p.CheckValidatorsTrainingState(ts.TwinName)
 	if err != nil {
 		p.Logger.Error(err.Error())
 	}
@@ -40,7 +50,7 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, trainingState types.T
 		if v.Complete {
 			nunComplete++
 		} else {
-			if ctx.BlockTime().Sub(trainingState.StartTime) > am.keeper.GetParams(ctx).MaxWaitingTraining {
+			if ctx.BlockTime().Sub(ts.StartTime) > am.keeper.GetParams(ctx).MaxWaitingTraining {
 				numTimeout++
 			}
 		}
@@ -48,44 +58,52 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, trainingState types.T
 
 	// If all complete
 	if nunComplete+numTimeout == len(vts) {
+		am.keeper.SetTrainingStateValue(ctx, ts, false)
+		am.keeper.SetTrainingStateValidationValue(ctx, ts, true)
+	}
+}
 
-		am.keeper.SetTrainingStateValue(ctx, false)
+func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingState) {
 
-		vtr, err := p.ReadValidatorsTrainingResults(trainingState.TwinName)
+	p := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
+
+	vtr, err := p.ReadValidatorsTrainingResults(ts.TwinName)
+	if err != nil {
+		p.Logger.Error(err.Error())
+		return
+	}
+
+	isBestResultValid := false
+	reasonWhyNotValid := ""
+	for !isBestResultValid {
+		idx, trainerMoniker, newTwinHash := p.GetBestTrainingResult(vtr)
+		isBestResultValid, reasonWhyNotValid, err = p.ValidateBestTrainingResult(ts.TwinName, trainerMoniker, newTwinHash)
 		if err != nil {
 			p.Logger.Error(err.Error())
 			return
 		}
 
-		isResultValid := false
-		reasonWhyNotValid := ""
-		for !isResultValid {
-			idx, trainerMoniker, newTwinHash := p.GetBestTrainingResult(vtr)
-			isResultValid, reasonWhyNotValid, err = p.ValidateBestTrainingResult(trainingState.TwinName, trainerMoniker, newTwinHash)
+		if isBestResultValid {
+			p.BroadcastBestResultIsValid(ts, newTwinHash)
+
+		} else {
 			if err != nil {
 				p.Logger.Error(err.Error())
-				return
-			}
-
-			if isResultValid {
-				p.BroadcastResultIsValid(trainingState)
-				am.keeper.UpdateTwinFromVestaTraining(ctx, trainingState.TwinName, newTwinHash)
-
 			} else {
-				if err != nil {
-					p.Logger.Error(err.Error())
-				} else {
-					p.Logger.Error(reasonWhyNotValid)
-					// remove not valid result from result slice
-					vtr = append(vtr[:idx], vtr[idx+1:]...)
+				p.Logger.Error(reasonWhyNotValid)
+				// remove not valid result from result slice
+				vtr = append(vtr[:idx], vtr[idx+1:]...)
 
-					// if result slice is empty break
-					if len(vtr) == 0 {
-						p.Logger.Error("All training results are not valid.")
-						break
-					}
+				// if result slice is empty break
+				if len(vtr) == 0 {
+					p.Logger.Error("All training results are not valid.")
+					break
 				}
 			}
 		}
 	}
+}
+
+func (am AppModule) HandleTwinUpdateFromVestaTraining(ctx sdk.Context, ts types.TrainingState, newTwinHash string) {
+	am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, newTwinHash)
 }

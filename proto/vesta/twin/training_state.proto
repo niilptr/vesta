@@ -11,4 +11,12 @@ message TrainingState {
   string twin_name = 2;
   google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
   string training_configuration_hash = 4;
+  ValidationState validation_state = 5;
 }
+
+message ValidationState {
+  bool value = 1;
+  google.protobuf.Timestamp start_time = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  map<string, string> map_validators_bestresulthash = 3;
+}
+

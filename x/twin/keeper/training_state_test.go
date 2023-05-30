@@ -35,10 +35,8 @@ func TestTrainingStateRemove(t *testing.T) {
 
 func TestTrainingStateSetValue(t *testing.T) {
 	keeper, ctx := keepertest.NewTestKeeper(t)
-	_ = createTestTrainingState(keeper, ctx, false)
-
-	ts := types.TrainingState{Value: true}
-	keeper.SetTrainingStateValue(ctx, true)
+	ts := createTestTrainingState(keeper, ctx, false)
+	keeper.SetTrainingStateValue(ctx, ts, true)
 	rst, found := keeper.GetTrainingState(ctx)
 	require.True(t, found)
 	require.Equal(t, ts, rst)
@@ -47,7 +45,6 @@ func TestTrainingStateSetValue(t *testing.T) {
 func TestTrainingStateGetValue(t *testing.T) {
 	keeper, ctx := keepertest.NewTestKeeper(t)
 	_ = createTestTrainingState(keeper, ctx, true)
-
 	value := keeper.GetTrainingStateValue(ctx)
 	require.True(t, value)
 }

@@ -15,17 +15,25 @@ func (k Keeper) SetTrainingState(ctx sdk.Context, trainingState types.TrainingSt
 }
 
 // SetTrainingStateValue set trainingState value in the store
-func (k Keeper) SetTrainingStateValue(ctx sdk.Context, value bool) {
+func (k Keeper) SetTrainingStateValue(ctx sdk.Context, ts types.TrainingState, value bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
-	ts := types.TrainingState{Value: value}
+	ts.Value = value
 	b := k.cdc.MustMarshal(&ts)
 	store.Set([]byte{0}, b)
 }
 
 // SetTrainingStateValue set trainingState value in the store
-func (k Keeper) SetTrainingStateTwinName(ctx sdk.Context, twinName string) {
+func (k Keeper) SetTrainingStateTwinName(ctx sdk.Context, ts types.TrainingState, twinName string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
-	ts := types.TrainingState{TwinName: twinName}
+	ts.TwinName = twinName
+	b := k.cdc.MustMarshal(&ts)
+	store.Set([]byte{0}, b)
+}
+
+// SetTrainingStateValue set trainingState value in the store
+func (k Keeper) SetTrainingStateValidationValue(ctx sdk.Context, ts types.TrainingState, value bool) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
+	ts.ValidationState.Value = value
 	b := k.cdc.MustMarshal(&ts)
 	store.Set([]byte{0}, b)
 }
