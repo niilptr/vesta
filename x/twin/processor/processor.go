@@ -2,6 +2,7 @@ package processor
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -9,11 +10,15 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
+	"vesta/x/twin/types"
 
 	toml "github.com/BurntSushi/toml"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
+
+const defaultTimeout time.Duration = 1 * time.Second
 
 type AccessTokenContent struct {
 	AccessToken AccessToken
@@ -360,14 +365,21 @@ func (p Processor) GetBestTrainingResult(vtr []ValidatorTrainingResults) (idx in
 
 func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, error) {
 
+	// Create a new context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	defer cancel()
+
+	client := &http.Client{}
+
 	req, err := http.NewRequest("GET", fileURL, nil)
 	if err != nil {
 		return []byte{}, err
 	}
 
+	req = req.WithContext(ctx)
+
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 
-	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return []byte{}, err
@@ -441,6 +453,6 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 	return true, "", nil
 }
 
-func (p Processor) BroadcastResultIsValid(trainingState) {
+func (p Processor) BroadcastBestResultIsValid(ts types.TrainingState, bestResTwinHash string) {
 
 }
