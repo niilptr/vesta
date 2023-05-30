@@ -3,15 +3,20 @@ package keeper
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"vesta/x/twin/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) ConfirmBestTrainResultIs(goCtx context.Context, msg *types.MsgConfirmBestTrainResultIs) (*types.MsgConfirmBestTrainResultIsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+	// TODO: check signer authorization
+
+	err := k.AddBestTrainResultToTrainingState(ctx, msg.Creator, msg.Hash)
+	if err != nil {
+		return &types.MsgConfirmBestTrainResultIsResponse{}, err
+	}
 
 	return &types.MsgConfirmBestTrainResultIsResponse{}, nil
 }

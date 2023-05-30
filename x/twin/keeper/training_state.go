@@ -39,16 +39,16 @@ func (k Keeper) SetTrainingStateValidationValue(ctx sdk.Context, ts types.Traini
 }
 
 // GetTrainingState returns trainingState
-func (k Keeper) GetTrainingState(ctx sdk.Context) (val types.TrainingState, found bool) {
+func (k Keeper) GetTrainingState(ctx sdk.Context) (ts types.TrainingState, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
 
 	b := store.Get([]byte{0})
 	if b == nil {
-		return val, false
+		return ts, false
 	}
 
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
+	k.cdc.MustUnmarshal(b, &ts)
+	return ts, true
 }
 
 // GetTraining returns trainingState
