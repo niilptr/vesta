@@ -387,14 +387,27 @@ func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, err
 	return body, nil
 }
 
-func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string) (isResultValid bool, reasonWhyFalse string, err error) {
+// ValidateBestTrainingResult will call validate.py, a python script that will:
+// 1. Compute the training results hash;
+// 2. Compare computed hash with the one saved in the results data structure;
+// 3. Compare computed hash with the one given in input to ValidateBestTrainingResult function;
+// 4. Compute accuracy metrics of the twin model;
+// 5. Compare computed accuracy metrics with the ones saved in the results data structure.
+// If all these checks are positive then validate.py will exit with status code 0, meaning that
+// the results are valid.
+// If checks fails, an exit code different from zero is returned by validate.py, with reason
+// in the stderr.
+// If checks cannot be performed due to misconfiguration or problems reaching remote resurces,
+// an exit code different from zero is returned by validate.py with an error message in the
+// stderr starting with "Fail".
+func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker string, twinHash string) (isResultValid bool, reasonWhyFalse string, err error) {
 
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
 	scriptPath := p.NodeHome + "validate.py"
 
-	cmd := exec.Command("python", scriptPath, "--input-dir", p.NodeHome)
+	cmd := exec.Command("python", scriptPath, "--input-dir", p.NodeHome, "--twin-hash", twinHash)
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -426,4 +439,8 @@ func (p Processor) ValidateTrainingResult(twinName string, trainerMoniker string
 	}
 
 	return true, "", nil
+}
+
+func (p Processor) BroadcastResultIsValid(trainingState) {
+
 }
