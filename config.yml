@@ -27,4 +27,4 @@ genesis:
   app_state:
     twin:
       params:
-        authorized_accounts: ["vesta15xhpaax757zz76x8p96ku2gwuyvh4wz0d5h400"]
+        authorized_accounts: ["vesta15xhpaax757zz76x8p96ku2gwuyvh4wz0d5h400", "vesta1u89k93p3q7fj4l5u5um3sas2ege9wmt3tk6l64"]
