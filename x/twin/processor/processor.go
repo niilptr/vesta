@@ -21,14 +21,14 @@ const defaultTimeout time.Duration = 1 * time.Second
 
 // TODO: Put these files together
 const access_token_file = "access_token.toml"
-const validator_moniker_file = "validator_moniker.toml"
-const validator_address_file = "validator_address.toml"
+const moniker_file = "moniker.toml"
+const address_file = "address.toml"
 const remote_file = "remote.toml"
 
 const training_script = "train.py"
 const validation_script = "validate.py"
-const confirm_training_ended_script = "confirm_training_ended.sh"
-const confirm_best_training_result_script = "confirm_best_training_result.sh"
+const confirm_train_phase_ended_script = "confirm_train_phase_ended.sh"
+const confirm_best_train_result_script = "confirm_best_train_result_is.sh"
 
 type AccessTokenContent struct {
 	AccessToken AccessToken
@@ -38,11 +38,11 @@ type AccessToken struct {
 	Value string
 }
 
-type ValidatorMonikerContent struct {
+type MonikerContent struct {
 	Moniker string
 }
 
-type ValidatorAddressContent struct {
+type AddressContent struct {
 	Address string
 }
 
@@ -67,12 +67,12 @@ type PushTo struct {
 }
 
 type TrainConfFileData struct {
-	Remote      string
-	Dataset_csv string
-	Model_csv   string
-	Push_to     PushTo
-	Validator   string
-	Lr          float64
+	TwinRemoteDirectory string
+	Dataset_csv         string
+	Model_csv           string
+	Push_to             PushTo
+	Moniker             string
+	Lr                  float64
 }
 type ValidatorTrainData struct {
 	Moniker string
@@ -140,38 +140,38 @@ func NewProcessor(nodeHome string, log log.Logger) (Processor, error) {
 		return p, err
 	}
 
-	validator_moniker, err := p.getValidatorMoniker()
+	moniker, err := p.getMoniker()
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return p, err
 	}
 
-	validator_address, err := p.getValidatorAddress()
+	address, err := p.getAddress()
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return p, err
 	}
 
 	p.accessToken = access_token
-	p.address = validator_address
-	p.moniker = validator_moniker
+	p.address = address
+	p.moniker = moniker
 
 	return p, nil
 }
 
 func (p Processor) GetNodeHome() string {
-	return p.GetNodeHome()
+	return p.nodeHome
 }
 
 func (p Processor) GetAccessToken() string {
 	return p.accessToken
 }
 
-func (p Processor) GetValidatorAddress() string {
+func (p Processor) GetAddress() string {
 	return p.address
 }
 
-func (p Processor) GetValidatorMoniker() string {
+func (p Processor) GetMoniker() string {
 	return p.moniker
 }
 
@@ -193,16 +193,16 @@ func (p Processor) getAccessToken() (string, error) {
 	return c.AccessToken.Value, nil
 }
 
-func (p Processor) getValidatorMoniker() (string, error) {
+func (p Processor) getMoniker() (string, error) {
 
-	file := p.GetNodeHome() + validator_moniker_file
+	file := p.GetNodeHome() + moniker_file
 
 	bz, err := ioutil.ReadFile(file)
 	if err != nil {
 		return "", err
 	}
 
-	var c ValidatorMonikerContent
+	var c MonikerContent
 	err = toml.Unmarshal(bz, &c)
 	if err != nil {
 		return "", err
@@ -211,16 +211,16 @@ func (p Processor) getValidatorMoniker() (string, error) {
 	return c.Moniker, nil
 }
 
-func (p Processor) getValidatorAddress() (string, error) {
+func (p Processor) getAddress() (string, error) {
 
-	file := p.GetNodeHome() + validator_address_file
+	file := p.GetNodeHome() + address_file
 
 	bz, err := ioutil.ReadFile(file)
 	if err != nil {
 		return "", err
 	}
 
-	var c ValidatorAddressContent
+	var c AddressContent
 	err = toml.Unmarshal(bz, &c)
 	if err != nil {
 		return "", err
@@ -273,6 +273,9 @@ func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (
 	return tdc, twinRemoteURL, remoteURL, nil
 }
 
+// Read the train configuration settings from the remote repository and write the specific trainer
+// node settings to a local file. This file will be later used by the training program to get
+// the information it needs.
 func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorTrainData, error) {
 
 	var vtd ValidatorTrainData
@@ -291,7 +294,7 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 		}
 		p.Logger.Error(fmt.Sprintf("val: %s  --> lr: %f", t.Moniker, lr))
 
-		if t.Moniker == p.GetValidatorMoniker() {
+		if t.Moniker == p.GetMoniker() {
 			vtd = t
 			found = true
 		}
@@ -307,12 +310,12 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 	}
 
 	tcfd := TrainConfFileData{
-		Remote:      twinRemoteURL,
-		Dataset_csv: trainDataContent.Dataset_csv,
-		Model_csv:   trainDataContent.Model_csv,
-		Push_to:     trainDataContent.Push_to,
-		Validator:   vtd.Moniker,
-		Lr:          lr,
+		TwinRemoteDirectory: twinRemoteURL,
+		Dataset_csv:         trainDataContent.Dataset_csv,
+		Model_csv:           trainDataContent.Model_csv,
+		Push_to:             trainDataContent.Push_to,
+		Moniker:             vtd.Moniker,
+		Lr:                  lr,
 	}
 
 	bz, err := json.MarshalIndent(tcfd, "", " ")
@@ -363,15 +366,20 @@ func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []Validato
 	resultsDirURL := filepath.Join(remoteURL + trainDataContent.Push_to.Path)
 
 	for _, vtd := range trainDataContent.ValidatorsTrainData {
+
 		monikerResultsURL := filepath.Join(resultsDirURL, vtd.Moniker+".json")
+
 		body, err := DoHttpRequestAndReturnBody(monikerResultsURL, p.GetAccessToken())
+
 		if err != nil || body == nil {
 			p.Logger.Error(err.Error())
 			vts = append(vts, ValidatorTrainingState{Moniker: vtd.Moniker, Complete: false})
 		}
+
 		if body != nil {
 			vts = append(vts, ValidatorTrainingState{Moniker: vtd.Moniker, Complete: true})
 		}
+
 	}
 
 	return vts, nil
@@ -384,17 +392,25 @@ func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []Validat
 		return vtr, err
 	}
 
-	resultsDirURL := filepath.Join(remoteURL + trainDataContent.Push_to.Path)
+	resultsURL := CheckPathFormat(remoteURL) + trainDataContent.Push_to.Path
 
 	for _, vtd := range trainDataContent.ValidatorsTrainData {
-		monikerResultsURL := filepath.Join(resultsDirURL, vtd.Moniker+".json")
+
+		// resultsURL will be a string like "https://.../twin01/results/{moniker}.json" .
+		// To get the actual results "{moniker}" must be replaced with the actual
+		// trainer moniker.
+		monikerResultsURL := strings.ReplaceAll(resultsURL, "{moniker}", vtd.Moniker)
+
 		body, err := DoHttpRequestAndReturnBody(monikerResultsURL, p.GetAccessToken())
 		if err != nil {
 			p.Logger.Error(err.Error())
 			continue
 		}
+
 		var trainingResults ValidatorTrainingResults
+
 		json.Unmarshal(body, &trainingResults)
+
 		vtr = append(vtr, trainingResults)
 	}
 
@@ -404,9 +420,13 @@ func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []Validat
 func (p Processor) GetBestTrainingResult(vtr []ValidatorTrainingResults) (idx int, trainerMoniker string, newTwinHash string) {
 
 	var best_score float32 = 0
+
 	for i, v := range vtr {
+
 		score := (100-v.Err_perc)/100 + v.R2
+
 		if score > best_score {
+
 			best_score = score
 			idx = i
 		}
@@ -493,7 +513,7 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 			if stderr[:4] == "Fail" {
 				// Errors related to process failures returns an error code different from 0 and
 				// a message in the stderr that starts with "Fail".
-				return false, "", fmt.Errorf(stderr)
+				return false, "", fmt.Errorf(strings.ReplaceAll(stderr, "\n", ""))
 
 			} else {
 				// When the results are not valid an error code different from 0 is returned and a
@@ -511,9 +531,9 @@ func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	scriptPath := p.GetNodeHome() + confirm_training_ended_script
+	scriptPath := p.GetNodeHome() + confirm_train_phase_ended_script
 
-	cmd := exec.Command("bash", scriptPath)
+	cmd := exec.Command("bash", scriptPath, "-f", p.address)
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -539,9 +559,9 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	scriptPath := p.GetNodeHome() + confirm_best_training_result_script
+	scriptPath := p.GetNodeHome() + confirm_best_train_result_script
 
-	cmd := exec.Command("bash", scriptPath, "--twin-hash", resultTwinHash)
+	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-r", resultTwinHash)
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -561,6 +581,3 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 	return nil
 
 }
-
-//func (p Processor) BroadcastBestResultIsValid(ts types.TrainingState, bestResTwinHash string) {
-//}

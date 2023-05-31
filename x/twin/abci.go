@@ -45,7 +45,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 		}
 	}
 
-	ts, _ = am.keeper.GetTrainingState(ctx)
+	ts, found = am.keeper.GetTrainingState(ctx)
 	if !found {
 		return
 	}
@@ -137,7 +137,7 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 		if isBestResultValid {
 			err := p.BroadcastConfirmationBestResultIsValid(newTwinHash)
 			if err != nil {
-				p.Logger.Error("Failed to broadcast train best result confirmation")
+				p.Logger.Error("Failed to broadcast confirmation train best result")
 				return
 			}
 
@@ -165,7 +165,7 @@ func (am AppModule) HandleTwinUpdateFromVestaTraining(ctx sdk.Context, ts types.
 
 func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
 
-	address := p.GetValidatorAddress()
+	address := p.GetAddress()
 	for addr, confirmed := range ts.TrainingPhaseEndedConfirmations {
 		if addr == address {
 			if confirmed {
@@ -179,7 +179,7 @@ func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, t
 
 func (am AppModule) CheckIfAlreadyConfirmedBestResult(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
 
-	address := p.GetValidatorAddress()
+	address := p.GetAddress()
 	for addr, confirmed := range ts.ValidationState.MapValidatorsBestresulthash {
 		if addr == address {
 			if len(confirmed) > 0 {

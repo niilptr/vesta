@@ -45273,6 +45273,10 @@ paths:
                 description: params holds all the parameters of this module.
                 type: object
                 properties:
+                  authorized_accounts:
+                    type: array
+                    items:
+                      type: string
                   max_waiting_training:
                     type: string
             description: >-
@@ -45320,6 +45324,10 @@ paths:
                     format: date-time
                   training_configuration_hash:
                     type: string
+                  training_phase_ended_confirmations:
+                    type: object
+                    additionalProperties:
+                      type: boolean
                   validation_state:
                     type: object
                     properties:
@@ -75179,6 +75187,10 @@ definitions:
   vesta.twin.Params:
     type: object
     properties:
+      authorized_accounts:
+        type: array
+        items:
+          type: string
       max_waiting_training:
         type: string
     description: Params defines the parameters for the module.
@@ -75239,6 +75251,10 @@ definitions:
             format: date-time
           training_configuration_hash:
             type: string
+          training_phase_ended_confirmations:
+            type: object
+            additionalProperties:
+              type: boolean
           validation_state:
             type: object
             properties:
@@ -75272,6 +75288,10 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
         properties:
+          authorized_accounts:
+            type: array
+            items:
+              type: string
           max_waiting_training:
             type: string
     description: QueryParamsResponse is response type for the Query/Params RPC method.
@@ -75287,6 +75307,10 @@ definitions:
         format: date-time
       training_configuration_hash:
         type: string
+      training_phase_ended_confirmations:
+        type: object
+        additionalProperties:
+          type: boolean
       validation_state:
         type: object
         properties:
