@@ -7,24 +7,26 @@ import (
 	keepertest "vesta/testutil/keeper"
 	"vesta/x/twin/processor"
 	"vesta/x/twin/types"
-
-	"github.com/stretchr/testify/require"
 )
 
 const PathFromHomeToTestDir = "test-vesta/"
 
-func NewTestProcessor(t *testing.T) processor.Processor {
+func NewTestProcessor(t *testing.T) (p processor.Processor, err error) {
 
 	userHome, err := os.UserHomeDir()
-	require.NoError(t, err)
+	if err != nil {
+		return p, err
+	}
 
 	userHome = processor.CheckPathFormat(userHome)
 	_, ctx := keepertest.NewTestKeeper(t)
 
 	l := ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 
-	p, err := processor.NewProcessor(userHome+PathFromHomeToTestDir, l)
-	require.NoError(t, err)
+	p, err = processor.NewProcessor(userHome+PathFromHomeToTestDir, l)
+	if err != nil {
+		return p, err
+	}
 
-	return p
+	return p, nil
 }

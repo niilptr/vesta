@@ -19,36 +19,37 @@ import (
 
 const defaultTimeout time.Duration = 1 * time.Second
 
-// TODO: Put these files together
-const access_token_file = "access_token.toml"
-const moniker_file = "moniker.toml"
-const address_file = "address.toml"
-const remote_file = "remote.toml"
+const nodeHomeToModuleHome = "twin-module/"
+const moduleConfigurationDir = nodeHomeToModuleHome + "configuration/"
+const moduleTrainingDir = nodeHomeToModuleHome + "training/"
+const moduleTrainingCoreDir = moduleTrainingDir + "core/"
+const moduleConfirmationDir = nodeHomeToModuleHome + "confirmation/"
+
+const twin_module_configuration_file = "twin.toml"
 
 const training_script = "train.py"
 const validation_script = "validate.py"
 const confirm_train_phase_ended_script = "confirm_train_phase_ended.sh"
 const confirm_best_train_result_script = "confirm_best_train_result_is.sh"
 
-type AccessTokenContent struct {
-	AccessToken AccessToken
+type TwinModuleConfigurationContent struct {
+	TrainConfigurationPath TrainConfigurationPath
+	AccessToken            AccessToken
+	Trainer                Trainer
+}
+
+type TrainConfigurationPath struct {
+	RemoteURL string
+	File      string
 }
 
 type AccessToken struct {
-	Value string
+	Token string
 }
 
-type MonikerContent struct {
-	Moniker string
-}
-
-type AddressContent struct {
+type Trainer struct {
 	Address string
-}
-
-type RemoteURLContent struct {
-	Remote string
-	File   string
+	Moniker string
 }
 
 type TrainDataContent struct {
@@ -110,11 +111,13 @@ type NNBias struct {
 }
 
 type Processor struct {
-	nodeHome    string
-	Logger      log.Logger
-	address     string
-	moniker     string
-	accessToken string
+	nodeHome                     string
+	Logger                       log.Logger
+	address                      string
+	moniker                      string
+	accessToken                  string
+	remoteURL                    string
+	remoteTrainConfigurationFile string
 }
 
 func CheckPathFormat(path string) string {
@@ -134,27 +137,18 @@ func NewProcessor(nodeHome string, log log.Logger) (Processor, error) {
 		Logger:   log,
 	}
 
-	access_token, err := p.getAccessToken()
+	accessToken, trainerAddress, trainerMoniker, remoteURL, trainConfigurationFile, err := p.getTwinModuleConfiguration()
+
 	if err != nil {
-		p.Logger.Error(err.Error())
+		log.Error(err.Error())
 		return p, err
 	}
 
-	moniker, err := p.getMoniker()
-	if err != nil {
-		p.Logger.Error(err.Error())
-		return p, err
-	}
-
-	address, err := p.getAddress()
-	if err != nil {
-		p.Logger.Error(err.Error())
-		return p, err
-	}
-
-	p.accessToken = access_token
-	p.address = address
-	p.moniker = moniker
+	p.accessToken = accessToken
+	p.address = trainerAddress
+	p.moniker = trainerMoniker
+	p.remoteURL = remoteURL
+	p.remoteTrainConfigurationFile = trainConfigurationFile
 
 	return p, nil
 }
@@ -175,102 +169,52 @@ func (p Processor) GetMoniker() string {
 	return p.moniker
 }
 
-func (p Processor) getAccessToken() (string, error) {
+func (p Processor) GetRemoteURL() string {
+	return p.remoteURL
+}
 
-	accessTokenFile := p.GetNodeHome() + access_token_file
+func (p Processor) GetRemoteTrainConfigurationFile() string {
+	return p.remoteTrainConfigurationFile
+}
 
-	bz, err := ioutil.ReadFile(accessTokenFile)
+func (p Processor) getTwinModuleConfiguration() (
+	accessToken string,
+	trainerAddress string,
+	trainerMoniker string,
+	remoteURL string,
+	remoteTrainConfigurationFile string,
+	err error,
+) {
+
+	twinModuleConfiguration := p.GetNodeHome() + moduleConfigurationDir + twin_module_configuration_file
+
+	bz, err := ioutil.ReadFile(twinModuleConfiguration)
 	if err != nil {
-		return "", err
+		return "", "", "", "", "", err
 	}
 
-	var c AccessTokenContent
+	var c TwinModuleConfigurationContent
 	err = toml.Unmarshal(bz, &c)
 	if err != nil {
-		return "", err
+		return "", "", "", "", "", err
 	}
 
-	return c.AccessToken.Value, nil
+	return c.AccessToken.Token, c.Trainer.Address, c.Trainer.Moniker, c.TrainConfigurationPath.RemoteURL, c.TrainConfigurationPath.File, nil
 }
 
-func (p Processor) getMoniker() (string, error) {
+func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (tdc TrainDataContent, twinRemoteURL string, err error) {
 
-	file := p.GetNodeHome() + moniker_file
-
-	bz, err := ioutil.ReadFile(file)
-	if err != nil {
-		return "", err
-	}
-
-	var c MonikerContent
-	err = toml.Unmarshal(bz, &c)
-	if err != nil {
-		return "", err
-	}
-
-	return c.Moniker, nil
-}
-
-func (p Processor) getAddress() (string, error) {
-
-	file := p.GetNodeHome() + address_file
-
-	bz, err := ioutil.ReadFile(file)
-	if err != nil {
-		return "", err
-	}
-
-	var c AddressContent
-	err = toml.Unmarshal(bz, &c)
-	if err != nil {
-		return "", err
-	}
-
-	return c.Address, nil
-}
-
-func (p Processor) GetRemoteURL(twinName string) (trainConfURL string, twinRemoteURL string, remoteURL string, err error) {
-
-	file := p.GetNodeHome() + remote_file
-
-	bz, err := ioutil.ReadFile(file)
-	if err != nil {
-		return "", "", "", err
-	}
-
-	var content RemoteURLContent
-	err = toml.Unmarshal(bz, &content)
-	if err != nil {
-		return "", "", "", err
-	}
-
-	if content.Remote == "" || content.File == "" {
-		return "", "", "", fmt.Errorf("remote configuration file misconfigured")
-	}
-
-	content.Remote = CheckPathFormat(content.Remote)
-	trainConfURL = content.Remote + twinName + "/" + content.File
-	remoteURL = content.Remote
-	twinRemoteURL = content.Remote + twinName
-
-	return trainConfURL, twinRemoteURL, remoteURL, nil
-}
-
-func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (tdc TrainDataContent, twinRemoteURL string, remoteURL string, err error) {
-
-	fileURL, twinRemoteURL, remoteURL, err := p.GetRemoteURL(twinName)
-	if err != nil {
-		return tdc, "", "", err
-	}
+	twinRemoteURL = CheckPathFormat(p.remoteURL) + twinName + "/"
+	fileURL := twinRemoteURL + p.remoteTrainConfigurationFile
 
 	body, err := DoHttpRequestAndReturnBody(fileURL, accessToken)
 	if err != nil {
-		return tdc, "", "", err
+		return tdc, "", err
 	}
 
 	json.Unmarshal(body, &tdc)
 
-	return tdc, twinRemoteURL, remoteURL, nil
+	return tdc, twinRemoteURL, nil
 }
 
 // Read the train configuration settings from the remote repository and write the specific trainer
@@ -280,7 +224,7 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 
 	var vtd ValidatorTrainData
 
-	trainDataContent, twinRemoteURL, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
+	trainDataContent, twinRemoteURL, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return vtd, err
@@ -322,7 +266,7 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 	if err != nil {
 		return vtd, err
 	}
-	trainConfFile := p.GetNodeHome() + "train_conf.json"
+	trainConfFile := p.GetNodeHome() + moduleTrainingDir + "train_conf.json"
 	err = ioutil.WriteFile(trainConfFile, bz, 0644)
 	if err != nil {
 		return vtd, err
@@ -336,9 +280,9 @@ func (p Processor) Train() error {
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	scriptPath := p.GetNodeHome() + training_script
+	scriptPath := p.GetNodeHome() + moduleTrainingCoreDir + training_script
 
-	cmd := exec.Command("python", scriptPath, "--input-dir", p.GetNodeHome())
+	cmd := exec.Command("python", scriptPath, "--module-home", p.GetNodeHome()+nodeHomeToModuleHome, "--access-token", p.GetAccessToken())
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -358,12 +302,12 @@ func (p Processor) Train() error {
 
 func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []ValidatorTrainingState, err error) {
 
-	trainDataContent, _, remoteURL, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
+	trainDataContent, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
 	if err != nil {
 		return vts, err
 	}
 
-	resultsDirURL := filepath.Join(remoteURL + trainDataContent.Push_to.Path)
+	resultsDirURL := filepath.Join(p.remoteURL + trainDataContent.Push_to.Path)
 
 	for _, vtd := range trainDataContent.ValidatorsTrainData {
 
@@ -387,12 +331,12 @@ func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []Validato
 
 func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []ValidatorTrainingResults, err error) {
 
-	trainDataContent, _, remoteURL, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
+	trainDataContent, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
 	if err != nil {
 		return vtr, err
 	}
 
-	resultsURL := CheckPathFormat(remoteURL) + trainDataContent.Push_to.Path
+	resultsURL := CheckPathFormat(p.remoteURL) + trainDataContent.Push_to.Path
 
 	for _, vtd := range trainDataContent.ValidatorsTrainData {
 
@@ -460,6 +404,10 @@ func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, err
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode == 404 {
+		return []byte{}, fmt.Errorf("Error 404 file not found")
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return []byte{}, err
 	}
@@ -490,9 +438,9 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	scriptPath := p.GetNodeHome() + validation_script
+	scriptPath := p.GetNodeHome() + moduleTrainingCoreDir + validation_script
 
-	cmd := exec.Command("python", scriptPath, "--input-dir", p.GetNodeHome(), "--twin-hash", twinHash)
+	cmd := exec.Command("python", scriptPath, "--module-home", p.GetNodeHome()+nodeHomeToModuleHome, "--twin-hash", twinHash, "--access-token", p.GetAccessToken())
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -531,7 +479,7 @@ func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	scriptPath := p.GetNodeHome() + confirm_train_phase_ended_script
+	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_train_phase_ended_script
 
 	cmd := exec.Command("bash", scriptPath, "-f", p.address)
 	cmd.Stdout = &stdoutBuf
@@ -559,7 +507,7 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 
-	scriptPath := p.GetNodeHome() + confirm_best_train_result_script
+	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_best_train_result_script
 
 	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-r", resultTwinHash)
 	cmd.Stdout = &stdoutBuf
