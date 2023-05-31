@@ -23,16 +23,25 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	isTraining := ts.Value
 
 	if isTraining {
+
 		agreement := am.keeper.CheckMajorityAgreesOnTrainingPhaseEnded(ctx, ts, uint32(numAuthorized))
+
 		if agreement {
-			am.keeper.SetTrainingStateValue(ctx, ts, false)
+			ts = am.keeper.MustUpdateTrainingStateValue(ctx, ts, false)
 			// TODO: emit event training phase complete
 
 		} else {
-			confirmed := am.CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx)
-			if !confirmed {
-				am.HandleTrainingResults(ctx, ts)
+
+			p, err := processor.NewProcessor(am.keeper.GetNodeHome(), am.keeper.Logger(ctx))
+			if err != nil {
+				return
 			}
+
+			confirmed := am.CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx, ts, p)
+			if !confirmed {
+				am.HandleTrainingResults(ctx, ts, p)
+			}
+
 		}
 	}
 
@@ -42,15 +51,24 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 	}
 
 	isValidating := ts.ValidationState.Value
+
 	if isValidating {
+
 		agreement, twinHash := am.keeper.CheckMajorityAgreesOnTrainingBestResult(ctx, ts, uint32(numAuthorized))
+
 		if agreement {
-			am.keeper.SetTrainingStateValidationValue(ctx, ts, false)
+			ts = am.keeper.MustUpdateTrainingStateValidationValue(ctx, ts, false)
 			am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, twinHash)
 			// TODO: Emit event validation complete
 
 		} else {
-			confirmed := am.CheckIfAlreadyConfirmedBestResult(ctx)
+
+			p, err := processor.NewProcessor(am.keeper.GetNodeHome(), am.keeper.Logger(ctx))
+			if err != nil {
+				return
+			}
+
+			confirmed := am.CheckIfAlreadyConfirmedBestResult(ctx, ts, p)
 			if !confirmed {
 				am.HandleValidationPhase(ctx, ts)
 			}
@@ -63,9 +81,7 @@ func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valid
 	return []abci.ValidatorUpdate{}
 }
 
-func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingState) {
-
-	p := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
+func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingState, p processor.Processor) {
 
 	vts, err := p.CheckValidatorsTrainingState(ts.TwinName)
 	if err != nil {
@@ -87,13 +103,20 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingStat
 
 	// If all complete
 	if nunComplete+numTimeout == len(vts) {
-		p.BroadcastConfirmation
+		err := p.BroadcastConfirmationTrainingPhaseEnded()
+		if err != nil {
+			p.Logger.Error("Failed to broadcast confirmation training phase ended")
+			return
+		}
 	}
 }
 
 func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingState) {
 
-	p := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
+	p, err := processor.NewProcessor(am.keeper.GetNodeHome(), keeper.ModuleLogger(ctx))
+	if err != nil {
+		return
+	}
 
 	vtr, err := p.ReadValidatorsTrainingResults(ts.TwinName)
 	if err != nil {
@@ -112,7 +135,11 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 		}
 
 		if isBestResultValid {
-			p.BroadcastBestResultIsValid(ts, newTwinHash)
+			err := p.BroadcastConfirmationBestResultIsValid(newTwinHash)
+			if err != nil {
+				p.Logger.Error("Failed to broadcast train best result confirmation")
+				return
+			}
 
 		} else {
 			if err != nil {
@@ -136,9 +163,30 @@ func (am AppModule) HandleTwinUpdateFromVestaTraining(ctx sdk.Context, ts types.
 	am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, newTwinHash)
 }
 
-func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, p processor.Processor) bool {
+func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
 
-	p.GetValidatorMoniker()
+	address := p.GetValidatorAddress()
+	for addr, confirmed := range ts.TrainingPhaseEndedConfirmations {
+		if addr == address {
+			if confirmed {
+				return true
+			}
+		}
+	}
 
-	return true
+	return false
+}
+
+func (am AppModule) CheckIfAlreadyConfirmedBestResult(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
+
+	address := p.GetValidatorAddress()
+	for addr, confirmed := range ts.ValidationState.MapValidatorsBestresulthash {
+		if addr == address {
+			if len(confirmed) > 0 {
+				return true
+			}
+		}
+	}
+
+	return false
 }

@@ -24,8 +24,12 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 
 	// Run the local script to train the digital twin.
 	// TODO: Check that TrainingConfigurationHash saved in the store corresponds to the hash of the file in the central db.
-	p := processor.NewProcessor(k.GetNodeHome(), k.Logger(ctx))
-	_, err := p.PrepareTraining(ctx, twinName)
+	p, err := processor.NewProcessor(k.GetNodeHome(), k.Logger(ctx))
+	if err != nil {
+		return err
+	}
+
+	_, err = p.PrepareTraining(ctx, twinName)
 	if err == nil {
 		if err == nil {
 			go p.Train()

@@ -11,22 +11,15 @@ import (
 const testTwinName = "eva00"
 const testTrainerMoniker = "val1"
 
-func TestGetAccessToken(t *testing.T) {
-
-	p := processortest.NewTestProcessor(t)
-
-	acctoken, err := p.GetAccessToken()
-	require.NoError(t, err)
-	require.NotEmpty(t, acctoken)
+func TestNewTestProcessor(t *testing.T) {
+	_ = processortest.NewTestProcessor(t)
 }
 
 func TestReadTrainConfiguration(t *testing.T) {
 
 	p := processortest.NewTestProcessor(t)
 
-	acctoken, err := p.GetAccessToken()
-	require.NoError(t, err)
-	tdc, twinRemoteURL, remoteURL, err := p.ReadTrainConfiguration(acctoken, testTwinName)
+	tdc, twinRemoteURL, remoteURL, err := p.ReadTrainConfiguration(p.GetAccessToken(), testTwinName)
 	require.NoError(t, err)
 	require.NotEmpty(t, tdc)
 	require.NotEmpty(t, twinRemoteURL)

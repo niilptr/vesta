@@ -14,28 +14,43 @@ func (k Keeper) SetTrainingState(ctx sdk.Context, trainingState types.TrainingSt
 	store.Set([]byte{0}, b)
 }
 
-// SetTrainingStateValue set trainingState value in the store
-func (k Keeper) SetTrainingStateValue(ctx sdk.Context, ts types.TrainingState, value bool) {
+// UpdateTrainingStateValue set trainingState value in the store
+func (k Keeper) MustUpdateTrainingStateValue(ctx sdk.Context, ts types.TrainingState, value bool) types.TrainingState {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
 	ts.Value = value
 	b := k.cdc.MustMarshal(&ts)
 	store.Set([]byte{0}, b)
+	ts, found := k.GetTrainingState(ctx)
+	if !found {
+		panic("Training state not found after its updating.")
+	}
+	return ts
 }
 
 // SetTrainingStateValue set trainingState value in the store
-func (k Keeper) SetTrainingStateTwinName(ctx sdk.Context, ts types.TrainingState, twinName string) {
+func (k Keeper) MustUpdateTrainingStateTwinName(ctx sdk.Context, ts types.TrainingState, twinName string) types.TrainingState {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
 	ts.TwinName = twinName
 	b := k.cdc.MustMarshal(&ts)
 	store.Set([]byte{0}, b)
+	ts, found := k.GetTrainingState(ctx)
+	if !found {
+		panic("Training state not found after its updating.")
+	}
+	return ts
 }
 
 // SetTrainingStateValue set trainingState value in the store
-func (k Keeper) SetTrainingStateValidationValue(ctx sdk.Context, ts types.TrainingState, value bool) {
+func (k Keeper) MustUpdateTrainingStateValidationValue(ctx sdk.Context, ts types.TrainingState, value bool) types.TrainingState {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.TrainingStateKey))
 	ts.ValidationState.Value = value
 	b := k.cdc.MustMarshal(&ts)
 	store.Set([]byte{0}, b)
+	ts, found := k.GetTrainingState(ctx)
+	if !found {
+		panic("Training state not found after its updating.")
+	}
+	return ts
 }
 
 // GetTrainingState returns trainingState

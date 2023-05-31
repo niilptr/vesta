@@ -21,5 +21,8 @@ func NewTestProcessor(t *testing.T) processor.Processor {
 	_, ctx := keepertest.NewTestKeeper(t)
 	l := ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 
-	return processor.NewProcessor(userHome+PathFromHomeToTestDir, l)
+	p, err := processor.NewProcessor(userHome+PathFromHomeToTestDir, l)
+	require.NoError(t, err)
+
+	return p
 }
