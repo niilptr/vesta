@@ -4,22 +4,27 @@ accounts:
   coins:
   - 20000token
   - 200000000stake
+  mnemonic: twin castle action employ volume maid butter elevator nose client away garbage
+    cup interest helmet transfer banner action party perfect happy toilet sweet   
+    luggage
 - name: bob
   coins:
   - 10000token
   - 100000000stake
-client:
-  openapi:
-    path: docs/static/openapi.yml
-faucet:
-  name: bob
-  coins:
-  - 5token
-  - 100000stake
+  mnemonic: kangaroo animal piano craft open shine fog solar car bread fee inform seven
+    later reason quiz into sun shrimp mind various unfold drastic fun
 validators:
 - name: alice
+  mnemonic: twin castle action employ volume maid butter elevator nose client away garbage
+    cup interest helmet transfer banner action party perfect happy toilet sweet   
+    luggage
   bonded: 100000000stake
   config:
     consensus:
       timeout_commit: 2s
     log_level: error
+genesis:
+  app_state:
+    twin:
+      params:
+        authorized_accounts: ["vesta15xhpaax757zz76x8p96ku2gwuyvh4wz0d5h400"]
