@@ -17,6 +17,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams() Params {
 	return Params{
+		AuthorizedAccounts: []string{},
 		MaxWaitingTraining: 60 * time.Second,
 	}
 }

@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-	"vesta/x/twin/types"
 
 	toml "github.com/BurntSushi/toml"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -453,6 +452,5 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 	return true, "", nil
 }
 
-func (p Processor) BroadcastBestResultIsValid(ts types.TrainingState, bestResTwinHash string) {
-
-}
+//func (p Processor) BroadcastBestResultIsValid(ts types.TrainingState, bestResTwinHash string) {
+//}

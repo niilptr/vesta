@@ -3,11 +3,13 @@ package vesta.twin;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "vesta/x/twin/types";
 
 // Params defines the parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
-  google.protobuf.Duration max_waiting_training = 1 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+  repeated string authorized_accounts = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  google.protobuf.Duration max_waiting_training = 2 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
 }

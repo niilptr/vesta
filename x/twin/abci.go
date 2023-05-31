@@ -13,21 +13,49 @@ import (
 
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
-	ts, _ := am.keeper.GetTrainingState(ctx)
+	numAuthorized := len(am.keeper.GetAuthorizedAccounts(ctx))
+
+	ts, found := am.keeper.GetTrainingState(ctx)
+	if !found {
+		return
+	}
+
 	isTraining := ts.Value
-	isValidating := ts.ValidationState.Value
 
 	if isTraining {
-		am.HandleTrainingResults(ctx, ts)
+		agreement := am.keeper.CheckMajorityAgreesOnTrainingPhaseEnded(ctx, ts, uint32(numAuthorized))
+		if agreement {
+			am.keeper.SetTrainingStateValue(ctx, ts, false)
+			// TODO: emit event training phase complete
+
+		} else {
+			confirmed := am.CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx)
+			if !confirmed {
+				am.HandleTrainingResults(ctx, ts)
+			}
+		}
 	}
 
+	ts, _ = am.keeper.GetTrainingState(ctx)
+	if !found {
+		return
+	}
+
+	isValidating := ts.ValidationState.Value
 	if isValidating {
-		// TODO: controlla quanti hanno broadcastato il best result
-		//
+		agreement, twinHash := am.keeper.CheckMajorityAgreesOnTrainingBestResult(ctx, ts, uint32(numAuthorized))
+		if agreement {
+			am.keeper.SetTrainingStateValidationValue(ctx, ts, false)
+			am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, twinHash)
+			// TODO: Emit event validation complete
 
-		am.HandleValidationPhase(ctx, ts)
+		} else {
+			confirmed := am.CheckIfAlreadyConfirmedBestResult(ctx)
+			if !confirmed {
+				am.HandleValidationPhase(ctx, ts)
+			}
+		}
 	}
-
 }
 
 // EndBlock contains the logic that is automatically triggered at the end of each block
@@ -59,8 +87,7 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingStat
 
 	// If all complete
 	if nunComplete+numTimeout == len(vts) {
-		am.keeper.SetTrainingStateValue(ctx, ts, false)
-		am.keeper.SetTrainingStateValidationValue(ctx, ts, true)
+		p.BroadcastConfirmation
 	}
 }
 
@@ -107,4 +134,11 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 
 func (am AppModule) HandleTwinUpdateFromVestaTraining(ctx sdk.Context, ts types.TrainingState, newTwinHash string) {
 	am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, newTwinHash)
+}
+
+func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, p processor.Processor) bool {
+
+	p.GetValidatorMoniker()
+
+	return true
 }
