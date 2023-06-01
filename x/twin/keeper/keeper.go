@@ -263,12 +263,12 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 	// Keeper acts before processor beacuse processor methods can lead to
 	// non-deterministic results (due e.g. to problems reaching the
 	// central db)
-	k.SetTrainingState(ctx, types.TrainingState{
-		Value:                     true,
-		TwinName:                  twinName,
-		StartTime:                 ctx.BlockTime(),
-		TrainingConfigurationHash: trainConfHash,
-	})
+	ts := types.NewEmptyTrainingState()
+	ts.Value = true
+	ts.TwinName = twinName
+	ts.StartTime = ctx.BlockTime()
+	ts.TrainingConfigurationHash = trainConfHash
+	k.SetTrainingState(ctx, ts)
 
 	////////// START GO ROUTINE ////////////////
 	// Processor will:

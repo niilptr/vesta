@@ -55,6 +55,6 @@ message ValidationState {
 
 message GenesisState {
   Params   params   = 1 [(gogoproto.nullable) = false];
-repeated Twin     twinList = 2 [(gogoproto.nullable) = false];
+  repeated Twin     twinList = 2 [(gogoproto.nullable) = false];
   TrainingState training_state = 3;
 }
