@@ -12,7 +12,7 @@ const (
 	testTwinNameTraining   = "eva00"
 	testTwinNameValidation = "eva00"
 	testTrainerMoniker     = "val1"
-	testTrainConfHash      = "a447bde2cd1a95e421fb33567be40c89940e2b4d572f7ca0f73826b5838108d8"
+	testTrainConfHash      = "2fd5316da2a85285e35e3e4785bf1fefab14c409a3d9c8222881dabb3fa366fb"
 )
 
 func TestNewTestProcessor(t *testing.T) {
