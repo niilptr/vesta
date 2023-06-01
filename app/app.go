@@ -490,7 +490,7 @@ func New(
 		keys[twinmoduletypes.StoreKey],
 		keys[twinmoduletypes.MemStoreKey],
 		app.GetSubspace(twinmoduletypes.ModuleName),
-		DefaultNodeHome,
+		homePath,
 	)
 	twinModule := twinmodule.NewAppModule(appCodec, app.TwinKeeper, app.AccountKeeper, app.BankKeeper)
 
