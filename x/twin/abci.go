@@ -2,6 +2,8 @@
 package twin
 
 import (
+	"fmt"
+
 	"vesta/x/twin/keeper"
 	"vesta/x/twin/processor"
 	"vesta/x/twin/types"
@@ -12,6 +14,8 @@ import (
 )
 
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
+
+	am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : HEIGHT %d  -  TIME %s.  -  HOME %s", ctx.BlockHeight(), ctx.BlockTime().GoString(), am.keeper.GetNodeHome()))
 
 	// Get how many authorized accounts are there. This is needed to verify if majority
 	// agrees.
@@ -27,9 +31,14 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 	if isTraining {
 
+		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Detected training phase"))
+
 		agreement := am.keeper.CheckMajorityAgreesOnTrainingPhaseEnded(ctx, ts, uint32(numAuthorized))
 
 		if agreement {
+
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Detected agreement training phase ended"))
+
 			ts = am.keeper.MustUpdateTrainingStateValue(ctx, ts, false)
 			// TODO: emit event training phase complete
 
@@ -42,6 +51,9 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 			confirmed := am.CheckIfTrainerAlreadyConfirmedTrainingPhaseEnded(ctx, ts, p)
 			if !confirmed {
+
+				am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Handling training results"))
+
 				am.HandleTrainingResults(ctx, ts, p)
 			}
 
@@ -57,9 +69,14 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 	if isValidating {
 
+		am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Detected validation phase"))
+
 		agreement, twinHash := am.keeper.CheckMajorityAgreesOnTrainingBestResult(ctx, ts, uint32(numAuthorized))
 
 		if agreement {
+
+			am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Detected agreement on best training result"))
+
 			ts = am.keeper.MustUpdateTrainingStateValidationValue(ctx, ts, false)
 			am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, twinHash)
 			// TODO: Emit event validation complete
@@ -73,6 +90,9 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 			confirmed := am.CheckIfTrainerAlreadyConfirmedBestResult(ctx, ts, p)
 			if !confirmed {
+
+				am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Handling validation phase"))
+
 				am.HandleValidationPhase(ctx, ts)
 			}
 		}

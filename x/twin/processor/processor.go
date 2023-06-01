@@ -292,6 +292,8 @@ func (p Processor) ReadTrainConfigurationAndVerifyHash(twinName string, trainHas
 		return tdc, "", types.ErrTrainConfigurationHashNotMatch
 	}
 
+	p.Logger.Debug(fmt.Sprintf("Remote train configuration file read and hash valid."))
+
 	json.Unmarshal(body, &tdc)
 
 	return tdc, twinRemoteURL, nil
@@ -316,7 +318,7 @@ func (p Processor) VerifyHashAndPrepareTraining(twinName string, trainConfHash s
 		if err != nil {
 			return vtd, err
 		}
-		p.Logger.Error(fmt.Sprintf("val: %s  --> lr: %f", t.Moniker, lr))
+		p.Logger.Debug(fmt.Sprintf("val: %s  --> lr: %f", t.Moniker, lr))
 
 		if t.Moniker == p.GetMoniker() {
 			vtd = t

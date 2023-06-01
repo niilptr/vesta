@@ -13,6 +13,12 @@ accounts:
   - 100000000stake
   mnemonic: kangaroo animal piano craft open shine fog solar car bread fee inform seven
     later reason quiz into sun shrimp mind various unfold drastic fun
+- name: carol
+  coins:
+  - 10000token
+  - 100000000stake
+  mnemonic: devote guess visa weasel boat shed obvious half cloud dream hunt almost faith
+    iron drop agree unfold service grunt reduce apple nut cherry style
 validators:
 - name: alice
   mnemonic: twin castle action employ volume maid butter elevator nose client away garbage
@@ -27,4 +33,4 @@ genesis:
   app_state:
     twin:
       params:
-        authorized_accounts: ["vesta15xhpaax757zz76x8p96ku2gwuyvh4wz0d5h400", "vesta1u89k93p3q7fj4l5u5um3sas2ege9wmt3tk6l64"]
+        authorized_accounts: ["vesta15xhpaax757zz76x8p96ku2gwuyvh4wz0d5h400", "vesta1u89k93p3q7fj4l5u5um3sas2ege9wmt3tk6l64", "vesta1vh9m4j59gwnwxw9vye003hy3sjfh2lp25s000f"]
