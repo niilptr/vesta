@@ -15,8 +15,16 @@ import (
 	"vesta/x/twin/types"
 )
 
-// Prevent strconv unused error
-var _ = strconv.IntSize
+func TestParamsQuery(t *testing.T) {
+	keeper, ctx := keepertest.NewTestKeeper(t)
+	wctx := sdk.WrapSDKContext(ctx)
+	params := types.DefaultParams()
+	keeper.SetParams(ctx, params)
+
+	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
+	require.NoError(t, err)
+	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
+}
 
 func TestTwinQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.NewTestKeeper(t)
@@ -123,4 +131,39 @@ func TestTwinQueryPaginated(t *testing.T) {
 		_, err := keeper.TwinAll(wctx, nil)
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
+}
+
+func TestTrainingStateQuery(t *testing.T) {
+	keeper, ctx := keepertest.NewTestKeeper(t)
+	wctx := sdk.WrapSDKContext(ctx)
+	item := createTestTrainingState(keeper, ctx, true)
+	for _, tc := range []struct {
+		desc     string
+		request  *types.QueryGetTrainingStateRequest
+		response *types.QueryGetTrainingStateResponse
+		err      error
+	}{
+		{
+			desc:     "First",
+			request:  &types.QueryGetTrainingStateRequest{},
+			response: &types.QueryGetTrainingStateResponse{TrainingState: item},
+		},
+		{
+			desc: "InvalidRequest",
+			err:  status.Error(codes.InvalidArgument, "invalid request"),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			response, err := keeper.TrainingState(wctx, tc.request)
+			if tc.err != nil {
+				require.ErrorIs(t, err, tc.err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t,
+					nullify.Fill(tc.response),
+					nullify.Fill(response),
+				)
+			}
+		})
+	}
 }
