@@ -14,6 +14,10 @@ const (
 	TypeMsgConfirmBestTrainResultIs = "confirm_best_train_result_is"
 )
 
+// =====================================================================
+// Twin
+// =====================================================================
+
 func NewMsgCreateTwin(
 	creator string,
 	name string,
@@ -137,7 +141,9 @@ func (msg *MsgDeleteTwin) ValidateBasic() error {
 	return nil
 }
 
-///////////////////////
+// =====================================================================
+// Train
+// =====================================================================
 
 func NewMsgTrain(creator string, name string, trainingHash string) *MsgTrain {
 	return &MsgTrain{
@@ -176,7 +182,9 @@ func (msg *MsgTrain) ValidateBasic() error {
 	return nil
 }
 
-//////////////////////////////////////
+// =====================================================================
+// Confirm train phase ended
+// =====================================================================
 
 func NewMsgConfirmTrainPhaseEnded(creator string) *MsgConfirmTrainPhaseEnded {
 	return &MsgConfirmTrainPhaseEnded{
@@ -213,7 +221,9 @@ func (msg *MsgConfirmTrainPhaseEnded) ValidateBasic() error {
 	return nil
 }
 
-//////////////////////////////////
+// =====================================================================
+// Confirm best result is
+// =====================================================================
 
 func NewMsgConfirmBestTrainResultIs(creator string, hash string) *MsgConfirmBestTrainResultIs {
 	return &MsgConfirmBestTrainResultIs{

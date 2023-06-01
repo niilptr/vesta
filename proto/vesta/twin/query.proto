@@ -5,9 +5,7 @@ package vesta.twin;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
-import "vesta/twin/params.proto";
 import "vesta/twin/twin.proto";
-import "vesta/twin/training_state.proto";
 
 option go_package = "vesta/x/twin/types";
 

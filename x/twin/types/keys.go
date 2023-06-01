@@ -12,20 +12,18 @@ const (
 
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_twin"
-)
 
-func KeyPrefix(p string) []byte {
-	return []byte(p)
-}
-
-const (
+	// TrainingStateKey is the key for TrainingState
 	TrainingStateKey = "TrainingState/value/"
-)
 
-const (
 	// TwinKeyPrefix is the prefix to retrieve all Twin
 	TwinKeyPrefix = "Twin/value/"
 )
+
+// Convert string key in bytes
+func KeyPrefix(p string) []byte {
+	return []byte(p)
+}
 
 // TwinKey returns the store key to retrieve a Twin from the index fields
 func TwinKey(

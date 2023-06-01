@@ -1,9 +1,26 @@
 syntax = "proto3";
 package vesta.twin;
 
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 import "cosmos_proto/cosmos.proto";
 
 option go_package = "vesta/x/twin/types";
+
+// =====================================================================
+// Params
+// =====================================================================
+
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+  repeated string authorized_accounts = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  google.protobuf.Duration max_waiting_training = 2 [(gogoproto.nullable) = false, (gogoproto.stdduration) = true];
+}
+
+// =====================================================================
+// Twin
+// =====================================================================
 
 message Twin {
   
@@ -13,3 +30,31 @@ message Twin {
   string last_update = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"]; 
 }
 
+// =====================================================================
+// Training state
+// =====================================================================
+
+message TrainingState {
+  bool value = 1;
+  string twin_name = 2;
+  google.protobuf.Timestamp start_time = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  string training_configuration_hash = 4;
+  map<string, bool> training_phase_ended_confirmations = 5;
+  ValidationState validation_state = 6;
+}
+
+message ValidationState {
+  bool value = 1;
+  google.protobuf.Timestamp start_time = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  map<string, string> map_validators_bestresulthash = 3;
+}
+
+// =====================================================================
+// Genesis state
+// =====================================================================
+
+message GenesisState {
+  Params   params   = 1 [(gogoproto.nullable) = false];
+repeated Twin     twinList = 2 [(gogoproto.nullable) = false];
+  TrainingState training_state = 3;
+}

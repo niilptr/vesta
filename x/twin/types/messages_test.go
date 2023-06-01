@@ -9,6 +9,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// =====================================================================
+// Twin
+// =====================================================================
+
 func TestMsgCreateTwin_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
@@ -102,7 +106,9 @@ func TestMsgDeleteTwin_ValidateBasic(t *testing.T) {
 	}
 }
 
-/////////////////////////////
+// =====================================================================
+// Train
+// =====================================================================
 
 func TestMsgTrain_ValidateBasic(t *testing.T) {
 	tests := []struct {
@@ -135,7 +141,9 @@ func TestMsgTrain_ValidateBasic(t *testing.T) {
 	}
 }
 
-//////////////////////////
+// =====================================================================
+// Confirm train phase ended
+// =====================================================================
 
 func TestMsgConfirmTrainPhaseEnded_ValidateBasic(t *testing.T) {
 	tests := []struct {
@@ -168,7 +176,9 @@ func TestMsgConfirmTrainPhaseEnded_ValidateBasic(t *testing.T) {
 	}
 }
 
-//////////////////////////////////
+// =====================================================================
+// Confirm best result is
+// =====================================================================
 
 func TestMsgConfirmBestTrainResultIs_ValidateBasic(t *testing.T) {
 	tests := []struct {
