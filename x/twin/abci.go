@@ -159,10 +159,6 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 	}
 }
 
-func (am AppModule) HandleTwinUpdateFromVestaTraining(ctx sdk.Context, ts types.TrainingState, newTwinHash string) {
-	am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, newTwinHash)
-}
-
 func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
 
 	address := p.GetAddress()

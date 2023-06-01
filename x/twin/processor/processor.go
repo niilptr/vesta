@@ -17,21 +17,33 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-const defaultTimeout time.Duration = 1 * time.Second
+// =====================================================================
+// Settings
+// =====================================================================
 
+// Paths for the local node directory to reach twin module configuration,
+// training and confirmation files.
 const nodeHomeToModuleHome = "twin-module/"
 const moduleConfigurationDir = nodeHomeToModuleHome + "configuration/"
 const moduleTrainingDir = nodeHomeToModuleHome + "training/"
 const moduleTrainingCoreDir = moduleTrainingDir + "core/"
 const moduleConfirmationDir = nodeHomeToModuleHome + "confirmation/"
 
+// Local configuration, training, and confirmation files.
 const twin_module_configuration_file = "twin.toml"
-
 const training_script = "train.py"
 const validation_script = "validate.py"
 const confirm_train_phase_ended_script = "confirm_train_phase_ended.sh"
 const confirm_best_train_result_script = "confirm_best_train_result_is.sh"
 
+// Default time-out for http get request.
+const defaultTimeout time.Duration = 1 * time.Second
+
+// =====================================================================
+// Data structures
+// =====================================================================
+
+// Local twin module configuration file (twin.toml) data structure.
 type TwinModuleConfigurationContent struct {
 	TrainConfigurationPath TrainConfigurationPath
 	AccessToken            AccessToken
@@ -52,6 +64,7 @@ type Trainer struct {
 	Moniker string
 }
 
+// Remote json training configuration file in which the information about the training are saved.
 type TrainDataContent struct {
 	Dataset_csv         string
 	Model_csv           string
@@ -85,6 +98,7 @@ type ValidatorTrainingState struct {
 	Complete bool
 }
 
+// Remote results json file that will be uploaded by the trainer after local training is complete.
 type ValidatorTrainingResults struct {
 	Validator      string
 	Min_val_loss   float32
@@ -110,6 +124,8 @@ type NNBias struct {
 	Value []float64
 }
 
+// Processor is an abstracted element. It's role is to manage the training process,
+// upload the training results, choose the best result and broadcast the information.
 type Processor struct {
 	nodeHome                     string
 	Logger                       log.Logger
@@ -120,6 +136,10 @@ type Processor struct {
 	remoteTrainConfigurationFile string
 }
 
+// =====================================================================
+// Utilities
+// =====================================================================
+// CheckPathFormat ensures a string terminates with a slash.
 func CheckPathFormat(path string) string {
 	lastok := strings.Compare(path[len(path)-1:], "/")
 	if lastok != 0 {
@@ -128,6 +148,50 @@ func CheckPathFormat(path string) string {
 	return path
 }
 
+// Read a file stored in the remote repository, returning its body.
+func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, error) {
+
+	// Create a new context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+	defer cancel()
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest("GET", fileURL, nil)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	req = req.WithContext(ctx)
+
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == 404 {
+		return []byte{}, fmt.Errorf("Error 404 file not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return []byte{}, err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return body, nil
+}
+
+// =====================================================================
+// Processor
+// =====================================================================
 func NewProcessor(nodeHome string, log log.Logger) (Processor, error) {
 
 	nodeHome = CheckPathFormat(nodeHome)
@@ -202,6 +266,7 @@ func (p Processor) getTwinModuleConfiguration() (
 	return c.AccessToken.Token, c.Trainer.Address, c.Trainer.Moniker, c.TrainConfigurationPath.RemoteURL, c.TrainConfigurationPath.File, nil
 }
 
+// Read the remote json training configuration file.
 func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (tdc TrainDataContent, twinRemoteURL string, err error) {
 
 	twinRemoteURL = CheckPathFormat(p.remoteURL) + twinName + "/"
@@ -275,6 +340,8 @@ func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorT
 	return vtd, nil
 }
 
+// Start the training process. It will call train.py, an external script that will
+// perform the training and upload the results to the remote repository.
 func (p Processor) Train() error {
 
 	var stdoutBuf bytes.Buffer
@@ -300,6 +367,8 @@ func (p Processor) Train() error {
 	return err
 }
 
+// Check the remote repository for commited training results and returns if trainers
+// completed the training or not.
 func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []ValidatorTrainingState, err error) {
 
 	trainDataContent, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
@@ -329,6 +398,7 @@ func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []Validato
 	return vts, nil
 }
 
+// Read the training results from the remote repository.
 func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []ValidatorTrainingResults, err error) {
 
 	trainDataContent, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
@@ -361,6 +431,7 @@ func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []Validat
 	return vtr, nil
 }
 
+// Select best training result from all the results committed.
 func (p Processor) GetBestTrainingResult(vtr []ValidatorTrainingResults) (idx int, trainerMoniker string, newTwinHash string) {
 
 	var best_score float32 = 0
@@ -378,46 +449,6 @@ func (p Processor) GetBestTrainingResult(vtr []ValidatorTrainingResults) (idx in
 
 	return idx, vtr[idx].Validator, vtr[idx].SHA256
 
-}
-
-func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, error) {
-
-	// Create a new context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
-	defer cancel()
-
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", fileURL, nil)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	req = req.WithContext(ctx)
-
-	req.Header.Set("Authorization", "Bearer "+accessToken)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == 404 {
-		return []byte{}, fmt.Errorf("Error 404 file not found")
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return []byte{}, err
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return body, nil
 }
 
 // ValidateBestTrainingResult will call validate.py, a python script that will:
@@ -474,6 +505,9 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 	return true, "", nil
 }
 
+// Broadcast the network that all training have been completed (after completed or
+// timeout reached).It will call an external bash script that will perform an
+// automatic confirm-train-phase-ended transaction, singing from the trainer key.
 func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 
 	var stdoutBuf bytes.Buffer
@@ -502,6 +536,9 @@ func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 
 }
 
+// Broadcast the network that the best result among all is the one identified with the
+// provided hash. It will call an external bash script that will perform an
+// automatic confirm-best-train-result-is transaction, signing from the trainer key.
 func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string) error {
 
 	var stdoutBuf bytes.Buffer
