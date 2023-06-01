@@ -399,3 +399,24 @@ func (k Keeper) CheckMajorityAgreesOnTrainingBestResult(ctx sdk.Context, ts type
 
 	return true, mostReputableHash
 }
+
+// =====================================================================
+// Authorization
+// =====================================================================
+
+func (k Keeper) IsAccountAuthorized(ctx sdk.Context, address string) (bool, error) {
+
+	_, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return false, err
+	}
+
+	for _, addr := range k.GetAuthorizedAccounts(ctx) {
+		if address == addr {
+			return true, nil
+		}
+	}
+
+	return false, nil
+
+}

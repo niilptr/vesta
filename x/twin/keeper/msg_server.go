@@ -26,6 +26,16 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 func (ms msgServer) CreateTwin(goCtx context.Context, msg *types.MsgCreateTwin) (*types.MsgCreateTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	// Check authorization
+	authorized, err := ms.Keeper.IsAccountAuthorized(ctx, msg.Creator)
+	if err != nil {
+		return &types.MsgCreateTwinResponse{}, err
+	}
+
+	if !authorized {
+		return &types.MsgCreateTwinResponse{}, types.ErrAccountNotAuthorized
+	}
+
 	// Check if the value already exists
 	_, found := ms.Keeper.GetTwin(ctx, msg.Name)
 	if found {
@@ -40,6 +50,16 @@ func (ms msgServer) CreateTwin(goCtx context.Context, msg *types.MsgCreateTwin) 
 
 func (ms msgServer) UpdateTwin(goCtx context.Context, msg *types.MsgUpdateTwin) (*types.MsgUpdateTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Check authorization
+	authorized, err := ms.Keeper.IsAccountAuthorized(ctx, msg.Creator)
+	if err != nil {
+		return &types.MsgUpdateTwinResponse{}, err
+	}
+
+	if !authorized {
+		return &types.MsgUpdateTwinResponse{}, types.ErrAccountNotAuthorized
+	}
 
 	// Check if the value exists
 	twin, found := ms.Keeper.GetTwin(ctx, msg.Name)
@@ -61,6 +81,16 @@ func (ms msgServer) UpdateTwin(goCtx context.Context, msg *types.MsgUpdateTwin) 
 
 func (ms msgServer) DeleteTwin(goCtx context.Context, msg *types.MsgDeleteTwin) (*types.MsgDeleteTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	// Check authorization
+	authorized, err := ms.Keeper.IsAccountAuthorized(ctx, msg.Creator)
+	if err != nil {
+		return &types.MsgDeleteTwinResponse{}, err
+	}
+
+	if !authorized {
+		return &types.MsgDeleteTwinResponse{}, types.ErrAccountNotAuthorized
+	}
 
 	// Check if the value exists
 	twin, found := ms.Keeper.GetTwin(ctx, msg.Name)
@@ -85,7 +115,17 @@ func (ms msgServer) DeleteTwin(goCtx context.Context, msg *types.MsgDeleteTwin) 
 func (ms msgServer) Train(goCtx context.Context, msg *types.MsgTrain) (*types.MsgTrainResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := ms.Keeper.StartTraining(ctx, msg.Name, msg.Creator, msg.TrainingConfigurationHash)
+	// Check authorization
+	authorized, err := ms.Keeper.IsAccountAuthorized(ctx, msg.Creator)
+	if err != nil {
+		return &types.MsgTrainResponse{}, err
+	}
+
+	if !authorized {
+		return &types.MsgTrainResponse{}, types.ErrAccountNotAuthorized
+	}
+
+	err = ms.Keeper.StartTraining(ctx, msg.Name, msg.Creator, msg.TrainingConfigurationHash)
 	if err != nil {
 		return &types.MsgTrainResponse{}, err
 	}
@@ -100,9 +140,17 @@ func (ms msgServer) Train(goCtx context.Context, msg *types.MsgTrain) (*types.Ms
 func (ms msgServer) ConfirmTrainPhaseEnded(goCtx context.Context, msg *types.MsgConfirmTrainPhaseEnded) (*types.MsgConfirmTrainPhaseEndedResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: check sender authorization
+	// Check authorization
+	authorized, err := ms.Keeper.IsAccountAuthorized(ctx, msg.Creator)
+	if err != nil {
+		return &types.MsgConfirmTrainPhaseEndedResponse{}, err
+	}
 
-	err := ms.Keeper.AddTrainingPhaseEndedConfirmation(ctx, msg.Creator)
+	if !authorized {
+		return &types.MsgConfirmTrainPhaseEndedResponse{}, types.ErrAccountNotAuthorized
+	}
+
+	err = ms.Keeper.AddTrainingPhaseEndedConfirmation(ctx, msg.Creator)
 	if err != nil {
 		return &types.MsgConfirmTrainPhaseEndedResponse{}, err
 	}
@@ -117,9 +165,17 @@ func (ms msgServer) ConfirmTrainPhaseEnded(goCtx context.Context, msg *types.Msg
 func (ms msgServer) ConfirmBestTrainResultIs(goCtx context.Context, msg *types.MsgConfirmBestTrainResultIs) (*types.MsgConfirmBestTrainResultIsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: check signer authorization
+	// Check authorization
+	authorized, err := ms.Keeper.IsAccountAuthorized(ctx, msg.Creator)
+	if err != nil {
+		return &types.MsgConfirmBestTrainResultIsResponse{}, err
+	}
 
-	err := ms.Keeper.AddBestTrainResultToTrainingState(ctx, msg.Creator, msg.Hash)
+	if !authorized {
+		return &types.MsgConfirmBestTrainResultIsResponse{}, types.ErrAccountNotAuthorized
+	}
+
+	err = ms.Keeper.AddBestTrainResultToTrainingState(ctx, msg.Creator, msg.Hash)
 	if err != nil {
 		return &types.MsgConfirmBestTrainResultIsResponse{}, err
 	}
