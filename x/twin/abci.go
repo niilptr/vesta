@@ -83,7 +83,7 @@ func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valid
 
 func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingState, p processor.Processor) {
 
-	vts, err := p.CheckValidatorsTrainingState(ts.TwinName)
+	vts, err := p.CheckValidatorsTrainingState(ts.TwinName, ts.TrainingConfigurationHash)
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return
@@ -118,7 +118,7 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 		return
 	}
 
-	vtr, err := p.ReadValidatorsTrainingResults(ts.TwinName)
+	vtr, err := p.ReadValidatorsTrainingResults(ts.TwinName, ts.TrainingConfigurationHash)
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return

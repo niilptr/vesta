@@ -20,9 +20,9 @@ func setupMsgServer(t testing.TB) (types.MsgServer, context.Context) {
 	return keeper.NewMsgServerImpl(*k), sdk.WrapSDKContext(ctx)
 }
 
-// =====================================================================
+// ====================================================================================
 // Twin
-// =====================================================================
+// ====================================================================================
 
 func TestTwinMsgServerCreate(t *testing.T) {
 	k, ctx := keepertest.NewTestKeeper(t)

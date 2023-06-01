@@ -273,6 +273,9 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 		return types.ErrTrainingInProgress
 	}
 
+	// Keeper acts before processor beacuse processor methods can lead to
+	// non-deterministic results (due e.g. to problems reaching the
+	// central db)
 	k.SetTrainingState(ctx, types.TrainingState{
 		Value:                     true,
 		TwinName:                  twinName,
@@ -280,21 +283,19 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 		TrainingConfigurationHash: trainConfHash,
 	})
 
-	// TODO: Check that TrainingConfigurationHash saved in the store corresponds to the hash of the file in the central db.
-
-	p, err := processor.NewProcessor(k.GetNodeHome(), k.Logger(ctx))
-	if err != nil {
-		return err
-	}
-
-	_, err = p.PrepareTraining(ctx, twinName)
-	if err == nil {
-		if err == nil {
-			go p.Train()
-		}
-	} else {
-		p.Logger.Error("Local training not start.")
-	}
+	////////// START GO ROUTINE ////////////////
+	// Processor will:
+	// 1. get the training configuration from remote (that configuration contains all trainers
+	//    specific configuration);
+	// 2. verify training configuration match the one provided;
+	// 3. select the specific train configuration to run on the Vesta node;
+	// 4. run the local training process
+	//
+	// The local training will:
+	// 1. get the specific training configuration;
+	// 2. train the twin model;
+	// 3. upload the training results.
+	go processor.StartProcessorForTrainingTwin(k.GetNodeHome(), k.Logger(ctx), twinName, trainConfHash)
 
 	return nil
 }
@@ -303,6 +304,9 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 // Confirm train phase ended
 // =====================================================================
 
+// Each authorized account has to check if training phase ended and broadcast its
+// confirmation. This confirmation will be stored in the training state, so later
+// it will be possible to verify if majority agrees on this.
 func (k Keeper) AddTrainingPhaseEndedConfirmation(ctx sdk.Context, signer string) error {
 
 	ts, found := k.GetTrainingState(ctx)
@@ -346,6 +350,9 @@ func (k Keeper) CheckMajorityAgreesOnTrainingPhaseEnded(ctx sdk.Context, ts type
 // Confirm best result is
 // =====================================================================
 
+// Each authorized account has to broadcast its best result, and this will be stored in
+// the training state, so later it will be possible to verify if majority agrees on a
+// specific result. Best result is actually represented by its hash (the new twin hash).
 func (k Keeper) AddBestTrainResultToTrainingState(ctx sdk.Context, signer string, twinHash string) error {
 
 	ts, found := k.GetTrainingState(ctx)

@@ -3,6 +3,8 @@ package processor
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,15 +13,15 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"vesta/x/twin/types"
 
 	toml "github.com/BurntSushi/toml"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-// =====================================================================
+// ====================================================================================
 // Settings
-// =====================================================================
+// ====================================================================================
 
 // Paths for the local node directory to reach twin module configuration,
 // training and confirmation files.
@@ -39,9 +41,9 @@ const confirm_best_train_result_script = "confirm_best_train_result_is.sh"
 // Default time-out for http get request.
 const defaultTimeout time.Duration = 1 * time.Second
 
-// =====================================================================
+// ====================================================================================
 // Data structures
-// =====================================================================
+// ====================================================================================
 
 // Local twin module configuration file (twin.toml) data structure.
 type TwinModuleConfigurationContent struct {
@@ -136,9 +138,10 @@ type Processor struct {
 	remoteTrainConfigurationFile string
 }
 
-// =====================================================================
+// ====================================================================================
 // Utilities
-// =====================================================================
+// ====================================================================================
+
 // CheckPathFormat ensures a string terminates with a slash.
 func CheckPathFormat(path string) string {
 	lastok := strings.Compare(path[len(path)-1:], "/")
@@ -189,9 +192,16 @@ func DoHttpRequestAndReturnBody(fileURL string, accessToken string) ([]byte, err
 	return body, nil
 }
 
-// =====================================================================
+func computeHash(bz []byte) string {
+
+	hash := sha256.Sum256(bz)
+
+	return hex.EncodeToString(hash[:])
+}
+
+// ====================================================================================
 // Processor
-// =====================================================================
+// ====================================================================================
 func NewProcessor(nodeHome string, log log.Logger) (Processor, error) {
 
 	nodeHome = CheckPathFormat(nodeHome)
@@ -267,14 +277,19 @@ func (p Processor) getTwinModuleConfiguration() (
 }
 
 // Read the remote json training configuration file.
-func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (tdc TrainDataContent, twinRemoteURL string, err error) {
+func (p Processor) ReadTrainConfigurationAndVerifyHash(twinName string, trainHash string) (tdc TrainDataContent, twinRemoteURL string, err error) {
 
 	twinRemoteURL = CheckPathFormat(p.remoteURL) + twinName + "/"
 	fileURL := twinRemoteURL + p.remoteTrainConfigurationFile
 
-	body, err := DoHttpRequestAndReturnBody(fileURL, accessToken)
+	body, err := DoHttpRequestAndReturnBody(fileURL, p.GetAccessToken())
 	if err != nil {
 		return tdc, "", err
+	}
+
+	hash := computeHash(body)
+	if hash != trainHash {
+		return tdc, "", types.ErrTrainConfigurationHashNotMatch
 	}
 
 	json.Unmarshal(body, &tdc)
@@ -285,11 +300,11 @@ func (p Processor) ReadTrainConfiguration(accessToken string, twinName string) (
 // Read the train configuration settings from the remote repository and write the specific trainer
 // node settings to a local file. This file will be later used by the training program to get
 // the information it needs.
-func (p Processor) PrepareTraining(ctx sdk.Context, twinName string) (ValidatorTrainData, error) {
+func (p Processor) VerifyHashAndPrepareTraining(twinName string, trainConfHash string) (ValidatorTrainData, error) {
 
 	var vtd ValidatorTrainData
 
-	trainDataContent, twinRemoteURL, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
+	trainDataContent, twinRemoteURL, err := p.ReadTrainConfigurationAndVerifyHash(twinName, trainConfHash)
 	if err != nil {
 		p.Logger.Error(err.Error())
 		return vtd, err
@@ -369,9 +384,9 @@ func (p Processor) Train() error {
 
 // Check the remote repository for commited training results and returns if trainers
 // completed the training or not.
-func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []ValidatorTrainingState, err error) {
+func (p Processor) CheckValidatorsTrainingState(twinName string, trainConfHash string) (vts []ValidatorTrainingState, err error) {
 
-	trainDataContent, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
+	trainDataContent, _, err := p.ReadTrainConfigurationAndVerifyHash(twinName, trainConfHash)
 	if err != nil {
 		return vts, err
 	}
@@ -399,9 +414,9 @@ func (p Processor) CheckValidatorsTrainingState(twinName string) (vts []Validato
 }
 
 // Read the training results from the remote repository.
-func (p Processor) ReadValidatorsTrainingResults(twinName string) (vtr []ValidatorTrainingResults, err error) {
+func (p Processor) ReadValidatorsTrainingResults(twinName string, trainConfHash string) (vtr []ValidatorTrainingResults, err error) {
 
-	trainDataContent, _, err := p.ReadTrainConfiguration(p.GetAccessToken(), twinName)
+	trainDataContent, _, err := p.ReadTrainConfigurationAndVerifyHash(twinName, trainConfHash)
 	if err != nil {
 		return vtr, err
 	}
@@ -565,4 +580,34 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 
 	return nil
 
+}
+
+// ====================================================================================
+// Go routines
+// ====================================================================================
+func StartProcessorForTrainingTwin(nodeHome string, log log.Logger, twinName string, trainConfigurationsHash string) {
+
+	p, err := NewProcessor(nodeHome, log)
+
+	if err != nil {
+		p.Logger.Error(
+			fmt.Sprintf("Local training not start: %s", err.Error()),
+		)
+		return
+	}
+
+	_, err = p.VerifyHashAndPrepareTraining(twinName, trainConfigurationsHash)
+	if err == nil {
+		p.Train()
+
+	} else {
+		// TODO: If due to hash mismatch a notification sould be broadcasted to
+		// stop training upon majority agrees.
+		p.Logger.Error(
+			fmt.Sprintf("Local training not start: %s", err.Error()),
+		)
+		return
+	}
+
+	return
 }

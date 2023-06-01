@@ -19,9 +19,9 @@ func NewMsgServerImpl(keeper Keeper) types.MsgServer {
 	return &msgServer{Keeper: keeper}
 }
 
-// =====================================================================
+// ====================================================================================
 // Twin
-// =====================================================================
+// ====================================================================================
 
 func (ms msgServer) CreateTwin(goCtx context.Context, msg *types.MsgCreateTwin) (*types.MsgCreateTwinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -108,9 +108,9 @@ func (ms msgServer) DeleteTwin(goCtx context.Context, msg *types.MsgDeleteTwin) 
 	return &types.MsgDeleteTwinResponse{}, nil
 }
 
-// =====================================================================
+// ====================================================================================
 // Train
-// =====================================================================
+// ====================================================================================
 
 func (ms msgServer) Train(goCtx context.Context, msg *types.MsgTrain) (*types.MsgTrainResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -133,9 +133,9 @@ func (ms msgServer) Train(goCtx context.Context, msg *types.MsgTrain) (*types.Ms
 	return &types.MsgTrainResponse{}, nil
 }
 
-// =====================================================================
+// ====================================================================================
 // Confirm train phase ended
-// =====================================================================
+// ====================================================================================
 
 func (ms msgServer) ConfirmTrainPhaseEnded(goCtx context.Context, msg *types.MsgConfirmTrainPhaseEnded) (*types.MsgConfirmTrainPhaseEndedResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -158,9 +158,9 @@ func (ms msgServer) ConfirmTrainPhaseEnded(goCtx context.Context, msg *types.Msg
 	return &types.MsgConfirmTrainPhaseEndedResponse{}, nil
 }
 
-// =====================================================================
+// ====================================================================================
 // Confirm best result is
-// =====================================================================
+// ====================================================================================
 
 func (ms msgServer) ConfirmBestTrainResultIs(goCtx context.Context, msg *types.MsgConfirmBestTrainResultIs) (*types.MsgConfirmBestTrainResultIsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)

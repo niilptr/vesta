@@ -12,9 +12,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// =====================================================================
+// ====================================================================================
 // Params
-// =====================================================================
+// ====================================================================================
 func (k Keeper) Params(goCtx context.Context, req *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -24,9 +24,9 @@ func (k Keeper) Params(goCtx context.Context, req *types.QueryParamsRequest) (*t
 	return &types.QueryParamsResponse{Params: k.GetParams(ctx)}, nil
 }
 
-// =====================================================================
+// ====================================================================================
 // Twin
-// =====================================================================
+// ====================================================================================
 func (k Keeper) TwinAll(goCtx context.Context, req *types.QueryAllTwinRequest) (*types.QueryAllTwinResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -72,9 +72,9 @@ func (k Keeper) Twin(goCtx context.Context, req *types.QueryGetTwinRequest) (*ty
 	return &types.QueryGetTwinResponse{Twin: val}, nil
 }
 
-// =====================================================================
+// ====================================================================================
 // Training state
-// =====================================================================
+// ====================================================================================
 func (k Keeper) TrainingState(goCtx context.Context, req *types.QueryGetTrainingStateRequest) (*types.QueryGetTrainingStateResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
