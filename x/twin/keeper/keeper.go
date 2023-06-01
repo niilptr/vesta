@@ -59,9 +59,9 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ModuleLogger(ctx)
 }
 
-// =====================================================================
+// ====================================================================================
 // Params
-// =====================================================================
+// ====================================================================================
 
 func (k Keeper) GetAuthorizedAccounts(ctx sdk.Context) []string {
 
@@ -93,9 +93,9 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-// =====================================================================
+// ====================================================================================
 // Twin
-// =====================================================================
+// ====================================================================================
 
 // SetTwin set a specific twin in the store from its index
 func (k Keeper) SetTwin(ctx sdk.Context, twin types.Twin) {
@@ -164,9 +164,9 @@ func (k Keeper) UpdateTwinFromVestaTraining(ctx sdk.Context, name string, hash s
 	k.SetTwin(ctx, twin)
 }
 
-// =====================================================================
+// ====================================================================================
 // Training state
-// =====================================================================
+// ====================================================================================
 
 // SetTrainingStateValue set trainingState value in the store
 func (k Keeper) SetTrainingState(ctx sdk.Context, trainingState types.TrainingState) {
@@ -261,9 +261,9 @@ func (k Keeper) RemoveTrainingState(ctx sdk.Context) {
 	store.Delete([]byte{0})
 }
 
-// =====================================================================
+// ====================================================================================
 // Train
-// =====================================================================
+// ====================================================================================
 
 func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, trainConfHash string) error {
 
@@ -285,8 +285,8 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 
 	////////// START GO ROUTINE ////////////////
 	// Processor will:
-	// 1. get the training configuration from remote (that configuration contains all trainers
-	//    specific configuration);
+	// 1. get the training configuration from remote (that configuration contains all
+	//    trainers specific configuration);
 	// 2. verify training configuration match the one provided;
 	// 3. select the specific train configuration to run on the Vesta node;
 	// 4. run the local training process
@@ -300,9 +300,9 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 	return nil
 }
 
-// =====================================================================
+// ====================================================================================
 // Confirm train phase ended
-// =====================================================================
+// ====================================================================================
 
 // Each authorized account has to check if training phase ended and broadcast its
 // confirmation. This confirmation will be stored in the training state, so later
@@ -346,9 +346,9 @@ func (k Keeper) CheckMajorityAgreesOnTrainingPhaseEnded(ctx sdk.Context, ts type
 	return true
 }
 
-// =====================================================================
+// ====================================================================================
 // Confirm best result is
-// =====================================================================
+// ====================================================================================
 
 // Each authorized account has to broadcast its best result, and this will be stored in
 // the training state, so later it will be possible to verify if majority agrees on a
@@ -357,8 +357,8 @@ func (k Keeper) AddBestTrainResultToTrainingState(ctx sdk.Context, signer string
 
 	ts, found := k.GetTrainingState(ctx)
 
-	// Cannot be possible that training state is not found because a train request would have
-	// initialized it.
+	// Cannot be possible that training state is not found because a train request
+	// would have initialized it.
 	if !found {
 		return types.ErrTrainingStateNotFound
 	}
@@ -369,8 +369,9 @@ func (k Keeper) AddBestTrainResultToTrainingState(ctx sdk.Context, signer string
 		return types.ErrTrainingInProgress
 	}
 
-	// Cannot be possible that validation state value (aka isValidating) is set to false
-	// (because validation phase must be active before agreement on best result is reached).
+	// Cannot be possible that validation state value (aka isValidating) is set to
+	// false (because validation phase must be active before agreement on best result
+	// is reached).
 	if !ts.ValidationState.Value {
 		return types.ErrTrainingValidationNotInProgress
 	}
@@ -407,9 +408,9 @@ func (k Keeper) CheckMajorityAgreesOnTrainingBestResult(ctx sdk.Context, ts type
 	return true, mostReputableHash
 }
 
-// =====================================================================
+// ====================================================================================
 // Authorization
-// =====================================================================
+// ====================================================================================
 
 func (k Keeper) IsAccountAuthorized(ctx sdk.Context, address string) (bool, error) {
 
