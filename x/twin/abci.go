@@ -13,8 +13,11 @@ import (
 
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
+	// Get how many authorized accounts are there. This is needed to verify if majority
+	// agrees.
 	numAuthorized := len(am.keeper.GetAuthorizedAccounts(ctx))
 
+	// Get the training state.
 	ts, found := am.keeper.GetTrainingState(ctx)
 	if !found {
 		return
@@ -37,7 +40,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 				return
 			}
 
-			confirmed := am.CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx, ts, p)
+			confirmed := am.CheckIfTrainerAlreadyConfirmedTrainingPhaseEnded(ctx, ts, p)
 			if !confirmed {
 				am.HandleTrainingResults(ctx, ts, p)
 			}
@@ -68,7 +71,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 				return
 			}
 
-			confirmed := am.CheckIfAlreadyConfirmedBestResult(ctx, ts, p)
+			confirmed := am.CheckIfTrainerAlreadyConfirmedBestResult(ctx, ts, p)
 			if !confirmed {
 				am.HandleValidationPhase(ctx, ts)
 			}
@@ -159,7 +162,7 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 	}
 }
 
-func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
+func (am AppModule) CheckIfTrainerAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
 
 	address := p.GetAddress()
 	for addr, confirmed := range ts.TrainingPhaseEndedConfirmations {
@@ -173,7 +176,7 @@ func (am AppModule) CheckIfAlreadyConfirmedTrainingPhaseEnded(ctx sdk.Context, t
 	return false
 }
 
-func (am AppModule) CheckIfAlreadyConfirmedBestResult(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
+func (am AppModule) CheckIfTrainerAlreadyConfirmedBestResult(ctx sdk.Context, ts types.TrainingState, p processor.Processor) bool {
 
 	address := p.GetAddress()
 	for addr, confirmed := range ts.ValidationState.MapValidatorsBestresulthash {
