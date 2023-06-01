@@ -30,7 +30,7 @@ func networkWithTrainingObjects(t *testing.T) (*network.Network, types.TrainingS
 	return network.New(t, cfg), *state.TrainingState
 }
 
-func TestShowTraining(t *testing.T) {
+func TestShowTrainingState(t *testing.T) {
 	net, obj := networkWithTrainingObjects(t)
 
 	ctx := net.Validators[0].ClientCtx
@@ -52,7 +52,7 @@ func TestShowTraining(t *testing.T) {
 		t.Run(tc.desc, func(t *testing.T) {
 			var args []string
 			args = append(args, tc.args...)
-			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowTraining(), args)
+			out, err := clitestutil.ExecTestCLICmd(ctx, cli.CmdShowTrainingState(), args)
 			if tc.err != nil {
 				stat, ok := status.FromError(tc.err)
 				require.True(t, ok)
