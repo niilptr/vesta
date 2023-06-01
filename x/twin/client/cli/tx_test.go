@@ -16,8 +16,9 @@ import (
 	"vesta/x/twin/client/cli"
 )
 
-// Prevent strconv unused error
-var _ = strconv.IntSize
+// =====================================================================
+// Twin
+// =====================================================================
 
 func TestCreateTwin(t *testing.T) {
 	net := network.New(t)

@@ -3,15 +3,16 @@ package twin
 import (
 	"math/rand"
 
+	"vesta/testutil/sample"
+	twinsimulation "vesta/x/twin/simulation"
+	"vesta/x/twin/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"vesta/testutil/sample"
-	twinsimulation "vesta/x/twin/simulation"
-	"vesta/x/twin/types"
 )
 
 // avoid unused import issue
@@ -47,8 +48,6 @@ const (
 	opWeightMsgConfirmBestTrainResultIs = "op_weight_msg_confirm_best_train_result_is"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgConfirmBestTrainResultIs int = 100
-
-	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -69,7 +68,6 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 				Name:    "1",
 			},
 		},
-		// this line is used by starport scaffolding # simapp/module/genesisState
 	}
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&twinGenesis)
 }
@@ -157,8 +155,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		weightMsgConfirmBestTrainResultIs,
 		twinsimulation.SimulateMsgConfirmBestTrainResultIs(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
-
-	// this line is used by starport scaffolding # simapp/module/operation
 
 	return operations
 }

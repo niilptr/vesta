@@ -14,7 +14,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgTrain{}, "twin/Train", nil)
 	cdc.RegisterConcrete(&MsgConfirmTrainPhaseEnded{}, "twin/ConfirmTrainPhaseEnded", nil)
 	cdc.RegisterConcrete(&MsgConfirmBestTrainResultIs{}, "twin/ConfirmBestTrainResultIs", nil)
-	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
@@ -32,7 +31,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgConfirmBestTrainResultIs{},
 	)
-	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

@@ -280,8 +280,8 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 		TrainingConfigurationHash: trainConfHash,
 	})
 
-	// Run the local script to train the digital twin.
 	// TODO: Check that TrainingConfigurationHash saved in the store corresponds to the hash of the file in the central db.
+
 	p, err := processor.NewProcessor(k.GetNodeHome(), k.Logger(ctx))
 	if err != nil {
 		return err

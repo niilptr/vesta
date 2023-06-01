@@ -24,7 +24,6 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		TrainingState: &types.TrainingState{},
-		// this line is used by starport scaffolding # genesis/test/state
 	}
 
 	k, ctx := keepertest.NewTestKeeper(t)
@@ -37,5 +36,4 @@ func TestGenesis(t *testing.T) {
 
 	require.ElementsMatch(t, genesisState.TwinList, got.TwinList)
 	require.Equal(t, genesisState.TrainingState, got.TrainingState)
-	// this line is used by starport scaffolding # genesis/test/assert
 }
