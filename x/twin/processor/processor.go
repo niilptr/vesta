@@ -476,7 +476,10 @@ func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 		return fmt.Errorf("Confirmation train phase ended: script not executable")
 	}
 
-	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-n", p.GetNodeHome())
+	p.Logger.Error(fmt.Sprintf("%s %s %s", scriptPath, p.address, p.nodeHome))
+
+	cmd := exec.Command(scriptPath, "-f", p.address, "-n", p.GetNodeHome())
+
 	var stdoutBuf bytes.Buffer
 	var stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf

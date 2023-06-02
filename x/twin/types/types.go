@@ -34,3 +34,44 @@ func NewEmptyTrainingState() TrainingState {
 		},
 	}
 }
+
+func CheckMajorityAgreesOnTrainingPhaseEnded(ts TrainingState, maxConfirmations uint32) bool {
+
+	count := 0
+	for _, value := range ts.TrainingPhaseEndedConfirmations {
+		if value == true {
+			count++
+		}
+	}
+
+	if float32(count) < float32(maxConfirmations*2/3) {
+		return false
+	}
+
+	return true
+}
+
+func CheckMajorityAgreesOnTrainingBestResult(ts TrainingState, maxConfirmations uint32) (agreement bool, twinHash string) {
+
+	countMap := make(map[string]uint32)
+
+	for _, hash := range ts.ValidationState.MapValidatorsBestresulthash {
+		countMap[hash] = countMap[hash] + 1
+	}
+
+	var maxCount uint32 = 0
+	mostReputableHash := ""
+
+	for hash, count := range countMap {
+		if count > maxCount {
+			maxCount = count
+			mostReputableHash = hash
+		}
+	}
+
+	if float32(maxCount) < float32(maxConfirmations)*2/3 {
+		return false, mostReputableHash
+	}
+
+	return true, mostReputableHash
+}

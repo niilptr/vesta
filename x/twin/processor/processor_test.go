@@ -61,3 +61,11 @@ func TestValidateTrainingResult(t *testing.T) {
 	require.Empty(t, reasonWhyFalse)
 
 }
+
+func TestBroadcastConfirmationTrainingPhaseEnded(t *testing.T) {
+	p, err := processortest.NewTestProcessor(t)
+	require.NoError(t, err)
+
+	err = p.BroadcastConfirmationTrainingPhaseEnded()
+	require.NoError(t, err)
+}

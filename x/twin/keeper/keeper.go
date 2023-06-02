@@ -322,22 +322,6 @@ func (k Keeper) AddTrainingPhaseEndedConfirmation(ctx sdk.Context, signer string
 	return nil
 }
 
-func (k Keeper) CheckMajorityAgreesOnTrainingPhaseEnded(ctx sdk.Context, ts types.TrainingState, maxConfirmations uint32) bool {
-
-	count := 0
-	for _, value := range ts.TrainingPhaseEndedConfirmations {
-		if value == true {
-			count++
-		}
-	}
-
-	if float32(count) < float32(maxConfirmations*2/3) {
-		return false
-	}
-
-	return true
-}
-
 // ====================================================================================
 // Confirm best result is
 // ====================================================================================
@@ -378,31 +362,6 @@ func (k Keeper) AddBestTrainResultToTrainingState(ctx sdk.Context, signer string
 	k.SetTrainingState(ctx, ts)
 
 	return nil
-}
-
-func (k Keeper) CheckMajorityAgreesOnTrainingBestResult(ctx sdk.Context, ts types.TrainingState, maxConfirmations uint32) (agreement bool, twinHash string) {
-
-	countMap := make(map[string]uint32)
-
-	for key := range ts.ValidationState.MapValidatorsBestresulthash {
-		countMap[key] = countMap[key] + 1
-	}
-
-	var maxCount uint32 = 0
-	mostReputableHash := ""
-
-	for hash, count := range countMap {
-		if count > maxCount {
-			maxCount = count
-			mostReputableHash = hash
-		}
-	}
-
-	if float32(maxCount) < float32(maxConfirmations*2/3) {
-		return false, mostReputableHash
-	}
-
-	return true, mostReputableHash
 }
 
 // ====================================================================================

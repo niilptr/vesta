@@ -33,7 +33,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Detected training phase"))
 
-		agreement := am.keeper.CheckMajorityAgreesOnTrainingPhaseEnded(ctx, ts, uint32(numAuthorized))
+		agreement := types.CheckMajorityAgreesOnTrainingPhaseEnded(ts, uint32(numAuthorized))
 
 		if agreement {
 
@@ -74,19 +74,23 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 
 	if isValidating {
 
-		am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Detected validation phase"))
+		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Detected validation phase"))
 
-		agreement, twinHash := am.keeper.CheckMajorityAgreesOnTrainingBestResult(ctx, ts, uint32(numAuthorized))
+		agreement, twinHash := types.CheckMajorityAgreesOnTrainingBestResult(ts, uint32(numAuthorized))
 
 		if agreement {
 
-			am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Detected agreement on best training result"))
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Detected agreement on best training result"))
 
 			ts = am.keeper.MustUpdateTrainingStateValidationValue(ctx, ts, false)
 			am.keeper.UpdateTwinFromVestaTraining(ctx, ts.TwinName, twinHash)
 			// TODO: Emit event validation complete
 
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : New twin hash %s", twinHash))
+
 		} else {
+
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : No agreement on training best result"))
 
 			p, err := processor.NewProcessor(am.keeper.GetNodeHome(), am.keeper.Logger(ctx))
 			if err != nil {
@@ -133,14 +137,10 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingStat
 
 	// If all complete
 	if nunComplete+numTimeout == len(vts) {
-		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : All training completed"))
 
-		err := p.BroadcastConfirmationTrainingPhaseEnded()
-		if err != nil {
-			p.Logger.Error("Failed to broadcast confirmation training phase ended")
-			return
-		}
-		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Broadcasted confirmation training complete"))
+		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Broadcasting training phase ended"))
+
+		go p.BroadcastConfirmationTrainingPhaseEnded()
 
 	}
 }
@@ -169,11 +169,10 @@ func (am AppModule) HandleValidationPhase(ctx sdk.Context, ts types.TrainingStat
 		}
 
 		if isBestResultValid {
-			err := p.BroadcastConfirmationBestResultIsValid(newTwinHash)
-			if err != nil {
-				p.Logger.Error("Failed to broadcast confirmation train best result")
-				return
-			}
+
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Broadcasting training result is valid."))
+
+			go p.BroadcastConfirmationBestResultIsValid(newTwinHash)
 
 		} else {
 			if err != nil {
