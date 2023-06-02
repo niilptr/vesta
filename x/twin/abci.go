@@ -40,19 +40,24 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Detected agreement training phase ended"))
 
 			ts = am.keeper.MustUpdateTrainingStateValue(ctx, ts, false)
+			ts = am.keeper.MustUpdateTrainingStateValidationValue(ctx, ts, true)
 			// TODO: emit event training phase complete
 
 		} else {
+
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : No agreement on training phase ended"))
 
 			p, err := processor.NewProcessor(am.keeper.GetNodeHome(), am.keeper.Logger(ctx))
 			if err != nil {
 				return
 			}
 
+			am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Checking if trainer confirmed"))
+
 			confirmed := am.CheckIfTrainerAlreadyConfirmedTrainingPhaseEnded(ctx, ts, p)
 			if !confirmed {
 
-				am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Handling training results"))
+				am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Handling training results"))
 
 				am.HandleTrainingResults(ctx, ts, p)
 			}
@@ -91,7 +96,7 @@ func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
 			confirmed := am.CheckIfTrainerAlreadyConfirmedBestResult(ctx, ts, p)
 			if !confirmed {
 
-				am.keeper.Logger(ctx).Debug(fmt.Sprintf("Begin block : Handling validation phase"))
+				am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Handling validation phase"))
 
 				am.HandleValidationPhase(ctx, ts)
 			}
@@ -106,6 +111,8 @@ func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valid
 
 func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingState, p processor.Processor) {
 
+	am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Checking remote training states"))
+
 	vts, err := p.CheckValidatorsTrainingState(ts.TwinName, ts.TrainingConfigurationHash)
 	if err != nil {
 		p.Logger.Error(err.Error())
@@ -118,7 +125,7 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingStat
 		if v.Complete {
 			nunComplete++
 		} else {
-			if ctx.BlockTime().Sub(ts.StartTime) > am.keeper.GetParams(ctx).MaxWaitingTraining {
+			if ctx.BlockTime().Sub(ts.StartTime) > am.keeper.GetMaxWaitingTraining(ctx) {
 				numTimeout++
 			}
 		}
@@ -126,11 +133,15 @@ func (am AppModule) HandleTrainingResults(ctx sdk.Context, ts types.TrainingStat
 
 	// If all complete
 	if nunComplete+numTimeout == len(vts) {
+		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : All training completed"))
+
 		err := p.BroadcastConfirmationTrainingPhaseEnded()
 		if err != nil {
 			p.Logger.Error("Failed to broadcast confirmation training phase ended")
 			return
 		}
+		am.keeper.Logger(ctx).Error(fmt.Sprintf("Begin block : Broadcasted confirmation training complete"))
+
 	}
 }
 
