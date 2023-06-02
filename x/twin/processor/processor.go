@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"time"
 	"vesta/x/twin/types"
@@ -371,9 +370,6 @@ func (p Processor) Train() error {
 	cmd.Stderr = &stderrBuf
 
 	err := cmd.Run()
-	if err != nil {
-		p.Logger.Error(err.Error())
-	}
 
 	stdout := stdoutBuf.String()
 	stderr := stderrBuf.String()
@@ -381,7 +377,12 @@ func (p Processor) Train() error {
 	p.Logger.Error(fmt.Sprintf("Captured training stdout\n%s\n", stdout))
 	p.Logger.Error(fmt.Sprintf("Captured training stderr\n%s\n", stderr))
 
-	return err
+	if err != nil {
+		p.Logger.Error(err.Error())
+		return err
+	}
+
+	return nil
 }
 
 // Check the remote repository for commited training results and returns if trainers
@@ -393,11 +394,14 @@ func (p Processor) CheckValidatorsTrainingState(twinName string, trainConfHash s
 		return vts, err
 	}
 
-	resultsDirURL := filepath.Join(p.remoteURL + trainDataContent.Push_to.Path)
+	resultsURL := CheckPathFormat(p.remoteURL) + trainDataContent.Push_to.Path
 
 	for _, vtd := range trainDataContent.ValidatorsTrainData {
 
-		monikerResultsURL := filepath.Join(resultsDirURL, vtd.Moniker+".json")
+		// resultsURL will be a string like "https://.../twin01/results/{moniker}.json" .
+		// To get the actual results "{moniker}" must be replaced with the actual
+		// trainer moniker.
+		monikerResultsURL := strings.ReplaceAll(resultsURL, "{moniker}", vtd.Moniker)
 
 		body, err := DoHttpRequestAndReturnBody(monikerResultsURL, p.GetAccessToken())
 
@@ -446,6 +450,36 @@ func (p Processor) ReadValidatorsTrainingResults(twinName string, trainConfHash 
 	}
 
 	return vtr, nil
+}
+
+// Broadcast the network that all training have been completed (after completed or
+// timeout reached).It will call an external bash script that will perform an
+// automatic confirm-train-phase-ended transaction, singing from the trainer key.
+func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
+
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
+
+	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_train_phase_ended_script
+
+	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-n", p.GetNodeHome())
+	cmd.Stdout = &stdoutBuf
+	cmd.Stderr = &stderrBuf
+
+	err := cmd.Run()
+
+	stdout := stdoutBuf.String()
+	stderr := stderrBuf.String()
+
+	p.Logger.Error(fmt.Sprintf("Captured broadcast-confirmation-train-phase-ended stdout\n%s\n", stdout))
+	p.Logger.Error(fmt.Sprintf("Captured broadcast-confirmation-train-phase-ended stderr\n%s\n", stderr))
+
+	if err != nil {
+		p.Logger.Error(err.Error())
+		return err
+	}
+
+	return nil
 }
 
 // Select best training result from all the results committed.
@@ -497,8 +531,8 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 	stdout := stdoutBuf.String()
 	stderr := stderrBuf.String()
 
-	p.Logger.Error(fmt.Sprintf("Captured training stdout\n%s\n", stdout))
-	p.Logger.Error(fmt.Sprintf("Captured training stderr\n%s\n", stderr))
+	p.Logger.Error(fmt.Sprintf("Captured validate stdout\n%s\n", stdout))
+	p.Logger.Error(fmt.Sprintf("Captured validate stderr\n%s\n", stderr))
 
 	if err != nil {
 		p.Logger.Error(err.Error())
@@ -522,37 +556,6 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 	return true, "", nil
 }
 
-// Broadcast the network that all training have been completed (after completed or
-// timeout reached).It will call an external bash script that will perform an
-// automatic confirm-train-phase-ended transaction, singing from the trainer key.
-func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
-
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
-
-	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_train_phase_ended_script
-
-	cmd := exec.Command("bash", scriptPath, "-f", p.address)
-	cmd.Stdout = &stdoutBuf
-	cmd.Stderr = &stderrBuf
-
-	err := cmd.Run()
-
-	stdout := stdoutBuf.String()
-	stderr := stderrBuf.String()
-
-	p.Logger.Error(fmt.Sprintf("Captured training stdout\n%s\n", stdout))
-	p.Logger.Error(fmt.Sprintf("Captured training stderr\n%s\n", stderr))
-
-	if err != nil {
-		p.Logger.Error(err.Error())
-		return err
-	}
-
-	return nil
-
-}
-
 // Broadcast the network that the best result among all is the one identified with the
 // provided hash. It will call an external bash script that will perform an
 // automatic confirm-best-train-result-is transaction, signing from the trainer key.
@@ -563,7 +566,7 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 
 	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_best_train_result_script
 
-	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-r", resultTwinHash)
+	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-r", resultTwinHash, "-n", p.GetNodeHome())
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -572,8 +575,8 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 	stdout := stdoutBuf.String()
 	stderr := stderrBuf.String()
 
-	p.Logger.Error(fmt.Sprintf("Captured training stdout\n%s\n", stdout))
-	p.Logger.Error(fmt.Sprintf("Captured training stderr\n%s\n", stderr))
+	p.Logger.Error(fmt.Sprintf("Captured broadcast-confirmation-best-result-is stdout\n%s\n", stdout))
+	p.Logger.Error(fmt.Sprintf("Captured broadcast-confirmation-best-result-is stderr\n%s\n", stderr))
 
 	if err != nil {
 		p.Logger.Error(err.Error())
@@ -587,7 +590,7 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 // ====================================================================================
 // Go routines
 // ====================================================================================
-func StartProcessorForTrainingTwin(nodeHome string, log log.Logger, twinName string, trainConfigurationsHash string) {
+func StartProcessorForTwinTraining(nodeHome string, log log.Logger, twinName string, trainConfigurationsHash string) {
 
 	p, err := NewProcessor(nodeHome, log)
 

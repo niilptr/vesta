@@ -282,7 +282,7 @@ func (k Keeper) StartTraining(ctx sdk.Context, twinName string, creator string, 
 	// 1. get the specific training configuration;
 	// 2. train the twin model;
 	// 3. upload the training results.
-	go processor.StartProcessorForTrainingTwin(k.GetNodeHome(), k.Logger(ctx), twinName, trainConfHash)
+	go processor.StartProcessorForTwinTraining(k.GetNodeHome(), k.Logger(ctx), twinName, trainConfHash)
 
 	return nil
 }
