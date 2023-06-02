@@ -475,7 +475,7 @@ func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 	p.Logger.Error(fmt.Sprintf("Captured broadcast-confirmation-train-phase-ended stderr\n%s\n", stderr))
 
 	if err != nil {
-		p.Logger.Error(err.Error())
+		p.Logger.Error("Error: Broadcast confirmation train phase ended:" + err.Error())
 		return err
 	}
 
@@ -579,7 +579,7 @@ func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string)
 	p.Logger.Error(fmt.Sprintf("Captured broadcast-confirmation-best-result-is stderr\n%s\n", stderr))
 
 	if err != nil {
-		p.Logger.Error(err.Error())
+		p.Logger.Error("Error: Broadcast confirmation best result:" + err.Error())
 		return err
 	}
 

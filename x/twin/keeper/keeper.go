@@ -310,6 +310,11 @@ func (k Keeper) AddTrainingPhaseEndedConfirmation(ctx sdk.Context, signer string
 		return types.ErrTrainingNotInProgress
 	}
 
+	// If empty re-initialize the map
+	if ts.TrainingPhaseEndedConfirmations == nil {
+		ts.TrainingPhaseEndedConfirmations = make(map[string]bool)
+	}
+
 	ts.TrainingPhaseEndedConfirmations[signer] = true
 
 	k.SetTrainingState(ctx, ts)
@@ -361,6 +366,11 @@ func (k Keeper) AddBestTrainResultToTrainingState(ctx sdk.Context, signer string
 	// is reached).
 	if !ts.ValidationState.Value {
 		return types.ErrTrainingValidationNotInProgress
+	}
+
+	// If empty re-initialize the map
+	if ts.ValidationState.MapValidatorsBestresulthash == nil {
+		ts.ValidationState.MapValidatorsBestresulthash = make(map[string]string)
 	}
 
 	ts.ValidationState.MapValidatorsBestresulthash[signer] = twinHash

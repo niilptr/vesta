@@ -136,3 +136,41 @@ func TestStartTraining(t *testing.T) {
 	err := k.StartTraining(ctx, twinName, creator, trainConfHash)
 	require.NoError(t, err)
 }
+
+// ====================================================================================
+// Confirm train phase ended
+// ====================================================================================
+func TestAddTrainingPhaseEndedConfirmation(t *testing.T) {
+
+	k, ctx := keepertest.NewTestKeeper(t)
+
+	ts := types.NewEmptyTrainingState()
+	ts.Value = true
+
+	k.SetTrainingState(ctx, ts)
+
+	err := k.AddTrainingPhaseEndedConfirmation(ctx, "vesta1testaddress01234")
+	require.NoError(t, err)
+
+	ts, found := k.GetTrainingState(ctx)
+	require.True(t, found)
+	require.NotNil(t, ts.TrainingPhaseEndedConfirmations)
+	require.Equal(t, 1, len(ts.TrainingPhaseEndedConfirmations))
+
+	err = k.AddTrainingPhaseEndedConfirmation(ctx, "vesta1testaddress5678")
+	require.NoError(t, err)
+
+	ts, found = k.GetTrainingState(ctx)
+	require.True(t, found)
+	require.NotNil(t, ts.TrainingPhaseEndedConfirmations)
+	require.Equal(t, 2, len(ts.TrainingPhaseEndedConfirmations))
+
+	err = k.AddTrainingPhaseEndedConfirmation(ctx, "vesta1testaddress5678")
+	require.NoError(t, err)
+
+	ts, found = k.GetTrainingState(ctx)
+	require.True(t, found)
+	require.NotNil(t, ts.TrainingPhaseEndedConfirmations)
+	require.Equal(t, 2, len(ts.TrainingPhaseEndedConfirmations))
+
+}
