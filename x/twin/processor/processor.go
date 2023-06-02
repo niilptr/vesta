@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -360,12 +361,11 @@ func (p Processor) VerifyHashAndPrepareTraining(twinName string, trainConfHash s
 // perform the training and upload the results to the remote repository.
 func (p Processor) Train() error {
 
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
-
 	scriptPath := p.GetNodeHome() + moduleTrainingCoreDir + training_script
 
 	cmd := exec.Command("python", scriptPath, "--module-home", p.GetNodeHome()+nodeHomeToModuleHome, "--access-token", p.GetAccessToken())
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -457,16 +457,32 @@ func (p Processor) ReadValidatorsTrainingResults(twinName string, trainConfHash 
 // automatic confirm-train-phase-ended transaction, singing from the trainer key.
 func (p Processor) BroadcastConfirmationTrainingPhaseEnded() error {
 
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
-
 	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_train_phase_ended_script
 
+	// Check if file is executable
+	info, err := os.Stat(scriptPath)
+	if err != nil {
+		p.Logger.Error("Error: Broadcast confirmation train phase ended:" + err.Error())
+		return err
+	}
+
+	// Apply bitmask 0100 to check if the script is executable by owner.
+	mode := info.Mode()
+	isExecutable := mode&0100 != 0
+
+	// Return if not executable
+	if !isExecutable {
+		p.Logger.Error("Error: Broadcast confirmation train phase ended: script not executable")
+		return fmt.Errorf("Confirmation train phase ended: script not executable")
+	}
+
 	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-n", p.GetNodeHome())
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
-	err := cmd.Run()
+	err = cmd.Run()
 
 	stdout := stdoutBuf.String()
 	stderr := stderrBuf.String()
@@ -517,12 +533,11 @@ func (p Processor) GetBestTrainingResult(vtr []ValidatorTrainingResults) (idx in
 // stderr starting with "Fail".
 func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker string, twinHash string) (isResultValid bool, reasonWhyFalse string, err error) {
 
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
-
 	scriptPath := p.GetNodeHome() + moduleTrainingCoreDir + validation_script
 
 	cmd := exec.Command("python", scriptPath, "--module-home", p.GetNodeHome()+nodeHomeToModuleHome, "--twin-hash", twinHash, "--access-token", p.GetAccessToken())
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
@@ -561,16 +576,32 @@ func (p Processor) ValidateBestTrainingResult(twinName string, trainerMoniker st
 // automatic confirm-best-train-result-is transaction, signing from the trainer key.
 func (p Processor) BroadcastConfirmationBestResultIsValid(resultTwinHash string) error {
 
-	var stdoutBuf bytes.Buffer
-	var stderrBuf bytes.Buffer
-
 	scriptPath := p.GetNodeHome() + moduleConfirmationDir + confirm_best_train_result_script
 
+	// Check if file is executable
+	info, err := os.Stat(scriptPath)
+	if err != nil {
+		p.Logger.Error("Error: Broadcast confirmation best result:" + err.Error())
+		return err
+	}
+
+	// Apply bitmask 0100 to check if the script is executable by owner.
+	mode := info.Mode()
+	isExecutable := mode&0100 != 0
+
+	// Return if not executable
+	if !isExecutable {
+		p.Logger.Error("Error: Broadcast confirmation best result: script not executable")
+		return fmt.Errorf("Confirmation best result: script not executable")
+	}
+
 	cmd := exec.Command("bash", scriptPath, "-f", p.address, "-r", resultTwinHash, "-n", p.GetNodeHome())
+	var stdoutBuf bytes.Buffer
+	var stderrBuf bytes.Buffer
 	cmd.Stdout = &stdoutBuf
 	cmd.Stderr = &stderrBuf
 
-	err := cmd.Run()
+	err = cmd.Run()
 
 	stdout := stdoutBuf.String()
 	stderr := stderrBuf.String()
